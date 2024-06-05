@@ -4,6 +4,9 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+### documentos temporarios do LibreOffice ###
+.~lock.*.odt#
+
 ### STS ###
 .apt_generated
 .classpath
