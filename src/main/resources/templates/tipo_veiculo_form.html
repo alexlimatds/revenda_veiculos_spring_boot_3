@@ -1,0 +1,25 @@
+<!DOCTYPE HTML>
+<html th:replace="~{layout.html::layout(~{::title}, ~{::div.main}, ~{})}" xmlns:th="http://www.thymeleaf.org">
+<head> 
+    <title>Revenda: Tipo de Veículo</title> 
+</head>
+<body>
+    <div class="main">
+        <h2 th:if="${tipoVeiculo.id}" th:text="'Alterar Tipo de Veículo'"/>
+        <h2 th:unless="${tipoVeiculo.id}" th:text="'Cadastrar Tipo de Veículo'"/>
+
+        <form class="input-validation-required" action="#" th:action="@{/tipos_veiculo/salvar}" th:object="${tipoVeiculo}" method="post">
+            <input type="hidden" th:value="*{id}" name="id"> <!-- necessário caso o formulário seja invalidado no lado servidor -->
+            
+            <sl-input name="descricao" label="Descrição" th:value="*{descricao}"></sl-input>
+            <p th:if="${#fields.hasErrors('descricao')}" th:errors="*{descricao}" class="campo-invalido">Mensagem</p>
+            
+            <br>
+            <sl-button variant="primary" type="submit">
+                <sl-icon slot="prefix" name="floppy"></sl-icon>
+                Salvar
+            </sl-button>
+        </form>
+    </div>
+</body>
+</html>

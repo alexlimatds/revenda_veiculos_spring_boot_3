@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<html th:replace="~{layout.html::layout(~{::title}, ~{::div.main}, ~{})}" xmlns:th="http://www.thymeleaf.org">
+<head> 
+    <title>Revenda: Modelo</title> 
+</head>
+<body>
+    <div class="main">
+        <h2 th:if="${modelo.id}" th:text="'Alterar Modelo'"/>
+        <h2 th:unless="${modelo.id}" th:text="'Cadastrar Modelo'"/>
+
+        <form class="input-validation-required" action="#" th:action="@{/modelos/salvar}" th:object="${modelo}" method="post">
+            <input type="hidden" th:value="*{id}" name="id">
+            
+            <sl-input name="descricao" label="Descrição" th:value="*{descricao}"></sl-input>
+            <p th:if="${#fields.hasErrors('descricao')}" th:errors="*{descricao}" class="campo-invalido">Mensagem</p>
+            <br>
+            
+            <sl-select label="Fabricante" th:value="*{fabricante?.id}" th:name="fabricante"> <!-- th:value="*{fabricante?.id}" é usado para manter a opção selecionada após a consulta ser realizada -->
+                <sl-option th:each="f : ${fabricantes}" th:value="${f.id}" th:text="${f.descricao}">Option 1</sl-option>
+            </sl-select>
+            <p th:if="${#fields.hasErrors('fabricante')}" th:errors="*{fabricante}" class="campo-invalido">Mensagem</p>
+            <br>
+            
+            <sl-select label="Tipo de veículo" th:value="*{tipo?.id}" th:name="tipo"> <!-- th:value="*{tipo?.id}" é usado para manter a opção selecionada após a consulta ser realizada -->
+                <sl-option th:each="t : ${tipos}" th:value="${t.id}" th:text="${t.descricao}">Option 1</sl-option>
+            </sl-select>
+            <p th:if="${#fields.hasErrors('tipo')}" th:errors="*{tipo}" class="campo-invalido">Mensagem</p>
+            <br>
+
+            <sl-button variant="primary" type="submit">
+                <sl-icon slot="prefix" name="floppy"></sl-icon>
+                Salvar
+            </sl-button>
+        </form>
+    </div>
+</body>
+</html>

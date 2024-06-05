@@ -1,0 +1,47 @@
+figure{
+    margin: 0;
+}
+th{
+    background-color: cadetblue;
+    color: white;
+    border-top: 2px solid black;
+    border-bottom: 2px solid black;
+    padding: 0.5rem;
+}
+td{
+    border-bottom: 1px solid grey;
+    padding: 0.5rem;
+}
+td.center {
+    text-align: center;
+}
+table tr:hover td {
+    background: #ffffff;
+}
+.campo-invalido{
+    color: red;
+    margin-top: 1px;
+}
+sl-divider{
+    --color: black;
+}
+@media screen and (min-width: 480px){
+    body > div{
+        max-width: 55em;
+        margin: 0 auto 0 auto;
+        border-width: 0;
+        padding: 0 0.5em 1em 0.5em;
+        background-color: rgb(245, 245, 245);
+    }
+    body{
+        padding: 0;
+        border-width: 0;
+        margin: 0;
+    }
+    h4{
+        margin-top: 0;
+    }
+    header{
+        padding-top: 0.5em;
+    }
+}

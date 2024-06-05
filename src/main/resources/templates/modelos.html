@@ -1,0 +1,101 @@
+<!DOCTYPE HTML>
+<html th:replace="~{layout.html::layout(~{::title}, ~{::div.main}, ~{::script})}" xmlns:th="http://www.thymeleaf.org">
+<head> 
+    <title>Revenda: Modelos</title> 
+    <script>
+        function confirmar(link, descricao){
+            const dialog = document.querySelector('.dialog-overview');
+            document.querySelector('#spanNomeModelo').textContent = descricao;
+            const btnConfirmar = dialog.querySelector('#btnConfirmar');
+            btnConfirmar.href = link;
+            dialog.show();
+        }
+    </script>
+</head>
+<body>
+    <div class="main">
+        <h2>Modelos</h2>
+
+        <sl-alert variant="success" open th:if="${msgSucesso}">
+            <sl-icon slot="icon" name="check2-circle"></sl-icon>
+            <span th:text=${msgSucesso}></span>
+        </sl-alert>
+
+        <sl-alert variant="danger" open th:if="${msgErro}">
+            <sl-icon slot="icon" name="exclamation-octagon"></sl-icon>
+            <span th:text=${msgErro}></span>
+        </sl-alert>
+
+        <p>
+            <sl-button href="/modelos/form" variant="primary">
+                <sl-icon slot="prefix" name="plus-circle"></sl-icon>
+                Cadastrar modelo
+            </sl-button>
+        </p>
+
+        <sl-divider></sl-divider>
+        
+        <form class="input-validation-required" action="#" th:action="@{/modelos/pesquisar}" th:object="${form}" method="get">
+            <sl-input name="modelo" label="Modelo" th:value="*{modelo}" clearable></sl-input>
+            <br>
+            
+            <sl-select label="Fabricante" name="idFabricante" th:value="*{idFabricante}" clearable> <!-- th:value="${idFabricante}" é usado para manter a opção selecionada após a consulta ser realizada -->
+                <sl-option th:each="f : ${fabricantes}" th:value="${f.id}" th:text="${f.descricao}">Option 1</sl-option>
+            </sl-select>
+            <br>
+            
+            <sl-select label="Tipo de veículo" name="idTipoVeiculo" th:value="*{idTipoVeiculo}" clearable>
+                <sl-option th:each="t : ${tipos}" th:value="${t.id}" th:text="${t.descricao}">Option 1</sl-option>
+            </sl-select>
+            <br>
+            <sl-button variant="success" type="submit">
+                <sl-icon slot="prefix" name="search"></sl-icon>
+                Pesquisar
+            </sl-button>
+        </form>
+        
+        <figure>
+            <br>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Modelo</th>
+                        <th>Tipo</th>
+                        <th>Fabricante</th>
+                        <th>Alterar</th>
+                        <th>Excluir</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="m: ${modelos}">
+                        <td th:text="${m.descricao}">Pálio</td>
+                        <td th:text="${m.tipo.descricao}">Hatch</td>
+                        <td th:text="${m.fabricante.descricao}">Fiat</td>
+                        
+                        <td class="center">
+                            <sl-icon-button name="pencil" label="alterar" th:href="@{'/modelos/form/'+${m.id}}"></sl-icon-button>
+                        </td>
+                        
+                        <td class="center">
+                            <sl-icon-button name="trash" label="excluir" th:onclick="confirmar([[@{'/modelos/excluir/'+${m.id}}]], [[${m.descricao}]])"></sl-icon-button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </figure>
+
+        <sl-dialog class="dialog-overview">
+            <sl-icon name="exclamation-triangle" slot="label"></sl-icon>
+            Confirmar exclusão do modelo <strong id="spanNomeModelo"></strong>?
+            <sl-button slot="footer" variant="primary" id="btnConfirmar">
+                <sl-icon slot="prefix" name="check-circle"></sl-icon>
+                Sim
+            </sl-button>
+            <sl-button slot="footer" variant="default" onclick="document.querySelector('.dialog-overview').hide()">
+                <sl-icon slot="prefix" name="x-circle"></sl-icon>
+                Cancelar
+            </sl-button>
+        </sl-dialog>
+    </div>
+</body>
+</html>

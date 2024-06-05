@@ -1,0 +1,75 @@
+<!DOCTYPE HTML>
+<html th:replace="~{layout.html::layout(~{::title}, ~{::div.main}, ~{::script})}" xmlns:th="http://www.thymeleaf.org">
+<head> 
+    <title>Revenda: Tipos de Veículo</title> 
+    <script>
+        function confirmar(link, descricao){
+            const dialog = document.querySelector('.dialog-overview');
+            document.querySelector('#spanNomeTipo').textContent = descricao;
+            const btnConfirmar = dialog.querySelector('#btnConfirmar');
+            btnConfirmar.href = link;
+            dialog.show();
+        }
+    </script>
+</head>
+<body>
+    <div class="main">
+        <h2>Tipos de Veículo</h2>
+
+        <sl-alert variant="success" open th:if="${msgSucesso}">
+            <sl-icon slot="icon" name="check2-circle"></sl-icon>
+            <span th:text=${msgSucesso}></span>
+        </sl-alert>
+
+        <sl-alert variant="danger" open th:if="${msgErro}">
+            <sl-icon slot="icon" name="exclamation-octagon"></sl-icon>
+            <span th:text=${msgErro}></span>
+        </sl-alert>
+
+        <p>
+            <sl-button href="/tipos_veiculo/form" variant="primary">
+                <sl-icon slot="prefix" name="plus-circle"></sl-icon>
+                Cadastrar tipo de veículo
+            </sl-button>
+        </p>
+
+        <figure>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tipo de Veículo</th>
+                        <th>Alterar</th>
+                        <th>Excluir</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="t: ${tipos}">
+                        <td th:text="${t.descricao}">Fiat</td>
+                        
+                        <td class="center">
+                            <sl-icon-button name="pencil" label="alterar" th:href="@{'/tipos_veiculo/form/'+${t.id}}"></sl-icon-button>
+                        </td>
+                        
+                        <td class="center">
+                            <sl-icon-button name="trash" label="excluir" th:onclick="confirmar([[@{'/tipos_veiculo/excluir/'+${t.id}}]], [[${t.descricao}]])"></sl-icon-button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </figure>
+
+        <sl-dialog class="dialog-overview">
+            <sl-icon name="exclamation-triangle" slot="label"></sl-icon>
+            Confirmar exclusão do tipo <strong id="spanNomeTipo"></strong>?
+            <sl-button slot="footer" variant="primary" id="btnConfirmar">
+                <sl-icon slot="prefix" name="check-circle"></sl-icon>
+                Sim
+            </sl-button>
+            <sl-button slot="footer" variant="default" onclick="document.querySelector('.dialog-overview').hide()">
+                <sl-icon slot="prefix" name="x-circle"></sl-icon>
+                Cancelar
+            </sl-button>
+        </sl-dialog>
+    </div>
+</body>
+</html>

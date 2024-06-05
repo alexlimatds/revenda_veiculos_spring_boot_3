@@ -1,0 +1,164 @@
+<!DOCTYPE HTML>
+<html th:replace="~{layout.html::layout(~{::title}, ~{::div.main}, ~{::script})}" xmlns:th="http://www.thymeleaf.org">
+<head> 
+    <title>Revenda: Veículos</title> 
+    <script>
+        function confirmar(link, descricao){
+            const dialog = document.querySelector('.dialog-overview');
+            document.querySelector('#spanNomeVeiculo').textContent = descricao;
+            const btnConfirmar = dialog.querySelector('#btnConfirmar');
+            btnConfirmar.href = link;
+            dialog.show();
+        }
+
+        $(document).ready(function() {
+            /* CAMPOS SELECT */
+            const selectFabricante = document.querySelector('sl-select[name="idFabricante"]');
+            selectFabricante.addEventListener('sl-change', event => {
+                const selectModelo = document.querySelector('sl-select[name="idModelo"]');  // Element
+                // remove opções de modelo atuais
+                const optionsModelo = document.querySelectorAll('sl-select[name="idModelo"] > sl-option') // NodeList
+                for(const op of optionsModelo){
+                    selectModelo.removeChild(op);
+                }
+
+                if(selectFabricante.value === ''){
+                    selectModelo.disabled = true;
+                }
+                else{
+                    var param = {"idFabricante" : selectFabricante.value};
+                    $.getJSON('veiculos/modelos', param)
+                        .done(function(data){
+                            $.each(data, function(i, obj){
+                                let op = document.createElement("sl-option");
+                                op.value = obj.id;
+                                op.innerText = obj.descricao + " " + obj.tipo.descricao;
+                                selectModelo.appendChild(op);
+                            })
+                        })
+                        .fail(function(jqxhr, textStatus, error){
+                            var err = textStatus + ", " + error;
+                            console.log("Falha na requisição: " + err );
+                            const alert = document.querySelector("#alertErro");
+                            alert.querySelector("span").textContent = "Ocorreu um erro";
+                            alert.show();
+                        });
+                    selectModelo.disabled = false;
+                }
+            });
+            /* BOTÃO DE PESQUISA */
+            const form = document.querySelector("form");
+            
+            form.addEventListener("submit", function(event){
+                event.preventDefault();
+                const form = document.querySelector('form');
+                const formData = new FormData(form);
+                $.ajax({
+                    type: 'POST',
+                    url: 'veiculos/pesquisar', // TODO: pegar URL do form
+                    data: formData, 
+                    processData: false, 
+                    contentType: false
+                }).done(function (data) {
+                    console.log("FUNFOU!");
+                }).fail(function(jqxhr, textStatus, error){
+                    console.log('FALHOU: ' + textStatus + ", " + error);
+                    console.log('DATA: ' + jqxhr.responseText);
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="main">
+        <h2>Veículos</h2>
+
+        <sl-alert id="alertSucesso" variant="success" th:open="${msgSucesso}">
+            <sl-icon slot="icon" name="check2-circle"></sl-icon>
+            <span th:text=${msgSucesso}></span>
+        </sl-alert>
+
+        <sl-alert id="alertErro" variant="danger" th:open="${msgErro}">
+            <sl-icon slot="icon" name="exclamation-octagon"></sl-icon>
+            <span th:text=${msgErro}></span>
+        </sl-alert>
+
+        <p>
+            <sl-button href="/modelos/form" variant="primary">
+                <sl-icon slot="prefix" name="plus-circle"></sl-icon>
+                Cadastrar veículo
+            </sl-button>
+        </p>
+
+        <sl-divider></sl-divider>
+        
+        <form class="input-validation-required" action="#" th:action="@{/veiculos/pesquisar}" th:object="${form}" method="post">
+            <sl-input name="placa" label="Placa" th:value="*{placa}" clearable></sl-input>
+            <br>
+
+            <sl-select label="Fabricante" name="idFabricante" th:value="*{idFabricante}" clearable> <!-- th:value="${idFabricante}" é usado para manter a opção selecionada após a consulta ser realizada -->
+                <sl-option th:each="f : ${fabricantes}" th:value="${f.id}" th:text="${f.descricao}">Option 1</sl-option>
+            </sl-select>
+            <br>
+
+            <sl-select label="Modelo" name="idModelo" th:value="*{idModelo}" help-text="Selecione um fabricante para ativar este campo" disabled clearable> <!-- th:value="${idModelo}" é usado para manter a opção selecionada após a consulta ser realizada -->
+            </sl-select>
+            <br>
+            
+            <sl-button variant="success" type="submit" id="btnPesquisar">
+                <sl-icon slot="prefix" name="search"></sl-icon>
+                Pesquisar
+            </sl-button>
+        </form>
+        
+        <figure>
+            <br>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Placa</th>
+                        <th>Ano</th>
+                        <th>Fabricante</th>
+                        <th>Modelo</th>
+                        <th>Tipo</th>
+                        <th>Foto</th>
+                        <th>Alterar</th>
+                        <th>Excluir</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="v: ${veiculos}">
+                        <td th:text="${v.placa}">MXR1611</td>
+                        <td th:text="${v.anoFabricacao}">2005</td>
+                        <td th:text="${v.fabricante.descricao}">Fiat</td>
+                        <td th:text="${v.modelo.descricao}">Uno</td>
+                        <td th:text="${v.modelo.tipo.descricao}">Hatch</td>
+                        <td>FOTO</td>
+                        
+                        <td class="center">
+                            <sl-icon-button name="pencil" label="alterar" th:href="@{'/veiculos/form/'+${v.id}}"></sl-icon-button>
+                        </td>
+                        
+                        <td class="center">
+                            <sl-icon-button name="trash" label="excluir" th:onclick="confirmar([[@{'/veiculos/excluir/'+${v.id}}]], [[${v.placa}]])"></sl-icon-button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </figure>
+
+        <sl-dialog class="dialog-overview">
+            <sl-icon name="exclamation-triangle" slot="label"></sl-icon>
+            Confirmar exclusão do veículo <strong id="spanNomeVeiculo"></strong>?
+            <sl-button slot="footer" variant="primary" id="btnConfirmar">
+                <sl-icon slot="prefix" name="check-circle"></sl-icon>
+                Sim
+            </sl-button>
+            <sl-button slot="footer" variant="default" onclick="document.querySelector('.dialog-overview').hide()">
+                <sl-icon slot="prefix" name="x-circle"></sl-icon>
+                Cancelar
+            </sl-button>
+        </sl-dialog>
+    </div>
+</body>
+</html>
