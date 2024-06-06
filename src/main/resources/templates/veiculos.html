@@ -11,60 +11,82 @@
             dialog.show();
         }
 
-        $(document).ready(function() {
+        var ready = (callback) => {
+            if (document.readyState != "loading") callback();
+            else document.addEventListener("DOMContentLoaded", callback);
+        }
+        ready(() => {
             /* CAMPOS SELECT */
             const selectFabricante = document.querySelector('sl-select[name="idFabricante"]');
-            selectFabricante.addEventListener('sl-change', event => {
-                const selectModelo = document.querySelector('sl-select[name="idModelo"]');  // Element
+            selectFabricante.addEventListener('sl-change', async event => {
+                const selectModelo = document.querySelector('sl-select[name="idModelo"]');
                 // remove opções de modelo atuais
-                const optionsModelo = document.querySelectorAll('sl-select[name="idModelo"] > sl-option') // NodeList
+                const optionsModelo = document.querySelectorAll('sl-select[name="idModelo"] > sl-option')
                 for(const op of optionsModelo){
                     selectModelo.removeChild(op);
                 }
-
+                // atualiza select de modelos
                 if(selectFabricante.value === ''){
                     selectModelo.disabled = true;
                 }
                 else{
-                    var param = {"idFabricante" : selectFabricante.value};
-                    $.getJSON('veiculos/modelos', param)
-                        .done(function(data){
-                            $.each(data, function(i, obj){
-                                let op = document.createElement("sl-option");
-                                op.value = obj.id;
-                                op.innerText = obj.descricao + " " + obj.tipo.descricao;
-                                selectModelo.appendChild(op);
-                            })
-                        })
-                        .fail(function(jqxhr, textStatus, error){
-                            var err = textStatus + ", " + error;
-                            console.log("Falha na requisição: " + err );
-                            const alert = document.querySelector("#alertErro");
-                            alert.querySelector("span").textContent = "Ocorreu um erro";
-                            alert.show();
-                        });
+                    try{
+                        const response = await fetch('veiculos/modelos?idFabricante=' + selectFabricante.value);
+                        const data = await response.json();
+                        for (const [i, obj] of Object.entries(data)) {
+                            let op = document.createElement("sl-option");
+                            op.value = obj.id;
+                            op.innerText = obj.descricao + " " + obj.tipo.descricao;
+                            selectModelo.appendChild(op);
+                        };
+                    }
+                    catch(error){
+                        console.log("Falha na requisição: " + error);
+                        const alert = document.querySelector("#alertErro");
+                        alert.querySelector("span").textContent = "Ocorreu um erro";
+                        alert.show();
+                    }
                     selectModelo.disabled = false;
                 }
             });
-            /* BOTÃO DE PESQUISA */
+            /* FORMULÁRIO DE PESQUISA */
             const form = document.querySelector("form");
-            
-            form.addEventListener("submit", function(event){
+            form.addEventListener("submit", async (event) => {
                 event.preventDefault();
                 const form = document.querySelector('form');
                 const formData = new FormData(form);
-                $.ajax({
-                    type: 'POST',
-                    url: 'veiculos/pesquisar', // TODO: pegar URL do form
-                    data: formData, 
-                    processData: false, 
-                    contentType: false
-                }).done(function (data) {
-                    console.log("FUNFOU!");
-                }).fail(function(jqxhr, textStatus, error){
-                    console.log('FALHOU: ' + textStatus + ", " + error);
-                    console.log('DATA: ' + jqxhr.responseText);
-                });
+                const formAction = form.action;
+                try {
+                    const response = await fetch(
+                        formAction, 
+                        {
+                            method: 'POST', 
+                            body: formData
+                        });
+                    if(response.ok){
+                        data = await response.json();
+                        tabela = document.querySelector("table > tbody");
+                        tabela.innerHTML = '';
+                        for (const [i, obj] of Object.entries(data)) {
+                            let linha = document.createElement("tr");
+                            linha.innerHTML = `<td>${obj.placa}</td><td>${obj.anoFabricacao}</td><td>${obj.modelo.fabricante.descricao}</td>
+                            <td>${obj.modelo.descricao}</td><td>${obj.modelo.tipo.descricao}</td><td>TODO</td><td>TODO</td><td>TODO</td>`;
+                            tabela.appendChild(linha);
+                        }
+                    }
+                    else if(response.status === 400){ // Bad request
+                        console.log('BAD REQUEST => ', response);
+                        data = await response.json();
+                        const alert = document.querySelector("#alertErro");
+                        alert.querySelector("span").textContent = data.msgErro;
+                        alert.show();
+                    }
+                    else
+                        throw new Error(response.status);
+                }
+                catch(error){
+                    console.error('Requisição falhou: ', error);
+                }
             });
         });
     </script>

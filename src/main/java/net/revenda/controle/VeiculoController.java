@@ -1,8 +1,11 @@
 package net.revenda.controle;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -20,6 +23,8 @@ import net.revenda.dominio.Fabricante;
 import net.revenda.dominio.FabricanteRepository;
 import net.revenda.dominio.Modelo;
 import net.revenda.dominio.ModeloRepository;
+import net.revenda.dominio.Veiculo;
+import net.revenda.dominio.VeiculoRepository;
 
 @Controller
 @RequestMapping("/veiculos")
@@ -30,6 +35,9 @@ public class VeiculoController {
 
     @Autowired
     private FabricanteRepository repositorioFabricante;
+
+    @Autowired
+    private VeiculoRepository repositorioVeiculo;
 
     //Disponibiliza a lista de fabricantes para a view
 	@ModelAttribute("fabricantes")
@@ -54,17 +62,25 @@ public class VeiculoController {
         @ModelAttribute @Valid BuscaVeiculoForm form, 
         BindingResult br
     ){
-        System.out.println("BATEU!!!!");
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
         ResponseEntity<?> re;
         if(br.hasErrors()){
-            re = ResponseEntity.badRequest().body("{'msgErro': 'Informe pelo menos um campo de pesquisa.'}");
+            var body = new HashMap<String, String>();
+            body.put("msgErro", "Informe pelo menos um campo de pesquisa.");
+            re = ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .headers(headers)
+                .body(body);
         }
         else{
             // TODO : usar consulta
-            List<Modelo> modelos = repositorioModelo.findAll();
-            re = ResponseEntity.ok().body(modelos);
+            List<Veiculo> modelos = repositorioVeiculo.findAll();
+            re = ResponseEntity
+                .status(HttpStatus.OK)
+                .headers(headers)
+                .body(modelos);
         }
-        //re.getHeaders().setContentType(MediaType.APPLICATION_JSON);
         return re;
     }
 }
