@@ -3,12 +3,27 @@
 <head> 
     <title>Revenda: Veículos</title> 
     <script>
-        function confirmar(link, descricao){
+        function confirmar(idVeiculo, placa){
             const dialog = document.querySelector('.dialog-overview');
-            document.querySelector('#spanNomeVeiculo').textContent = descricao;
+            document.querySelector('#spanPlacaVeiculo').textContent = placa;
             const btnConfirmar = dialog.querySelector('#btnConfirmar');
-            btnConfirmar.href = link;
+            btnConfirmar.idVeiculo = idVeiculo;
+            btnConfirmar.placa = placa;
             dialog.show();
+        }
+        function alertarErro(msg){
+            const alert = document.querySelector("#alertErro");
+            alert.querySelector("span").textContent = msg;
+            alert.show();
+        }
+        function alertarSucesso(msg){
+            const alert = document.querySelector("#alertSucesso");
+            alert.querySelector("span").textContent = msg;
+            alert.show();
+        }
+        function limparAlertas(){
+            document.querySelector("#alertErro").hide();
+            document.querySelector("#alertSucesso").hide();
         }
 
         var ready = (callback) => {
@@ -16,6 +31,29 @@
             else document.addEventListener("DOMContentLoaded", callback);
         }
         ready(() => {
+            /* BOTÃO PARA CONFIRMAR EXCLUSÃO DE VEÍCULO */
+            const btnConfirmar = document.querySelector('#btnConfirmar');
+            btnConfirmar.addEventListener('click', async event => {
+                limparAlertas();
+                try {
+                    const idVeiculo = btnConfirmar.idVeiculo;
+                    const response = await fetch('/veiculos/excluir/' + idVeiculo);
+                    if(response.ok){
+                        alertarSucesso(`Veículo de placa ${btnConfirmar.placa} excluído com sucesso.`);
+                        const tr = document.querySelector(`#tr_${idVeiculo}`);
+                        document.querySelector('tbody').removeChild(tr);
+                    }
+                    else
+                        throw new Error(response.status);
+                } 
+                catch (error) {
+                    console.log("Falha na requisição: " + error);
+                    alertarErro("Ocorreu um erro");
+                }
+                btnConfirmar.idVeiculo = null;
+                btnConfirmar.placa = null;
+                document.querySelector('.dialog-overview').hide();
+            });
             /* CAMPOS SELECT */
             const selectFabricante = document.querySelector('sl-select[name="idFabricante"]');
             selectFabricante.addEventListener('sl-change', async event => {
@@ -42,9 +80,7 @@
                     }
                     catch(error){
                         console.log("Falha na requisição: " + error);
-                        const alert = document.querySelector("#alertErro");
-                        alert.querySelector("span").textContent = "Ocorreu um erro";
-                        alert.show();
+                        alertarErro("Ocorreu um erro.");
                     }
                     selectModelo.disabled = false;
                 }
@@ -53,6 +89,7 @@
             const form = document.querySelector("form");
             form.addEventListener("submit", async (event) => {
                 event.preventDefault();
+                limparAlertas();
                 const form = document.querySelector('form');
                 const formData = new FormData(form);
                 const formAction = form.action;
@@ -69,17 +106,20 @@
                         tabela.innerHTML = '';
                         for (const [i, obj] of Object.entries(data)) {
                             let linha = document.createElement("tr");
-                            linha.innerHTML = `<td>${obj.placa}</td><td>${obj.anoFabricacao}</td><td>${obj.modelo.fabricante.descricao}</td>
-                            <td>${obj.modelo.descricao}</td><td>${obj.modelo.tipo.descricao}</td><td>TODO</td><td>TODO</td><td>TODO</td>`;
+                            linha.id = `tr_${obj.id}`;
+                            let colunas = `<td>${obj.placa}</td><td>${obj.anoFabricacao}</td><td>${obj.modelo.fabricante.descricao}</td>
+                                <td>${obj.modelo.descricao}</td><td>${obj.modelo.tipo.descricao}</td>`
+                            colunas += `<td>TODO</td><td>TODO</td>`
+                            colunas += `<td class="center"><sl-icon-button name="trash" label="excluir" 
+                                onclick="confirmar(${obj.id}, '${obj.placa}')"></sl-icon-button></td>`;
+                            linha.innerHTML = colunas;
                             tabela.appendChild(linha);
                         }
                     }
                     else if(response.status === 400){ // Bad request
                         console.log('BAD REQUEST => ', response);
                         data = await response.json();
-                        const alert = document.querySelector("#alertErro");
-                        alert.querySelector("span").textContent = data.msgErro;
-                        alert.show();
+                        alertarErro(data.msgErro);
                     }
                     else
                         throw new Error(response.status);
@@ -171,7 +211,7 @@
 
         <sl-dialog class="dialog-overview">
             <sl-icon name="exclamation-triangle" slot="label"></sl-icon>
-            Confirmar exclusão do veículo <strong id="spanNomeVeiculo"></strong>?
+            Confirmar exclusão do veículo <strong id="spanPlacaVeiculo"></strong>?
             <sl-button slot="footer" variant="primary" id="btnConfirmar">
                 <sl-icon slot="prefix" name="check-circle"></sl-icon>
                 Sim
