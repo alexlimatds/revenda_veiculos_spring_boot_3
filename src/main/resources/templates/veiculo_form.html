@@ -47,7 +47,7 @@
                     await buscarModelos(idFabricante);
                     document.querySelector('sl-select[name="idModeloSelecionado"]').value = idModelo;
                 }
-                document.querySelector('sl-dialog').show();
+                document.querySelector('#dialogSelecao').show();
             });
             /* BOTÃO PARA CONFIRMAR SELEÇÃO DE MODELO */
             const btnConfirmar = document.querySelector('#btnConfirmar');
@@ -65,7 +65,7 @@
                 document.querySelector('#sl-modelo').value = 
                     Array.from(optionsFabricante).filter(op => (op.value === idFabricante))[0].innerText + " " +
                     Array.from(optionsModelo).filter(op => (op.value === idModelo))[0].innerText;
-                document.querySelector('sl-dialog').hide();
+                document.querySelector('#dialogSelecao').hide();
             });
             /* CAMPO FABRICANTE (DIALOG) */
             const selectFabricante = document.querySelector('sl-select[name="idFabricanteSelecionado"]');
@@ -111,10 +111,10 @@
             <br>
 
             <div>
-                <label>
-                    Foto <br>
-                    <input type="file" name="arquivoFoto" accept="image/*" class="form_control">
-                </label>
+                <label for="fileFoto">Foto</label>
+                <br>
+                <sl-icon-button name="eye" label="ver foto" th:disabled="*{foto == null}"></sl-icon-button>
+                <input type="file" name="arquivoFoto" accept="image/*" class="form_control" id="fileFoto">
             </div>
             <br>
 
@@ -125,7 +125,7 @@
         </form>
         <input type="hidden" th:value="${veiculo.modelo?.fabricante?.id}" id="idFabricante">
 
-        <sl-dialog label="Seleção de modelo">
+        <sl-dialog label="Seleção de modelo" id="dialogSelecao">
             <sl-select label="Fabricante" name="idFabricanteSelecionado">
                 <sl-option th:each="f : ${fabricantes}" th:value="${f.id}" th:text="${f.descricao}">Option 1</sl-option>
             </sl-select>
@@ -138,10 +138,14 @@
                 <sl-icon slot="prefix" name="check-circle"></sl-icon>
                 Selecionar
             </sl-button>
-            <sl-button slot="footer" variant="default" onclick="document.querySelector('sl-dialog').hide()">
+            <sl-button slot="footer" variant="default" onclick="document.querySelector('#dialogSelecao').hide()">
                 <sl-icon slot="prefix" name="x-circle"></sl-icon>
                 Cancelar
             </sl-button>
+        </sl-dialog>
+
+        <sl-dialog id="dialogFoto">
+            <img id="imgVeiculo">
         </sl-dialog>
     </div>
 </body>

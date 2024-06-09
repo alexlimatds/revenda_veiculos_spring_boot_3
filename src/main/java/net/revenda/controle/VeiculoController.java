@@ -141,6 +141,11 @@ public class VeiculoController {
                 String mimeType = arquivoFoto.getContentType();
                 veiculo.setFoto(new Foto(bytes, mimeType));
             }
+            else{
+                veiculo.setFoto(
+                    repositorioVeiculo.findById(veiculo.getId()).get().getFoto()
+                );
+            }
             repositorioVeiculo.save(veiculo);
             rAttrs.addFlashAttribute("msgSucesso", "Veículo de placa " + veiculo.getPlaca() + " salvo com sucesso.");
         }catch(Exception ex){
