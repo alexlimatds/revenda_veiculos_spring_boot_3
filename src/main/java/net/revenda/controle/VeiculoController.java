@@ -19,11 +19,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.validation.Valid;
 import net.revenda.dominio.Fabricante;
 import net.revenda.dominio.FabricanteRepository;
+import net.revenda.dominio.Foto;
 import net.revenda.dominio.Modelo;
 import net.revenda.dominio.ModeloRepository;
 import net.revenda.dominio.Veiculo;
@@ -77,11 +79,14 @@ public class VeiculoController {
                 .body(body);
         }
         else{
-            List<Veiculo> modelos = repositorioVeiculo.findVeiculoByFields(form.getPlaca(), form.getIdFabricante(), form.getIdModelo());
+            List<Veiculo> veiculos = repositorioVeiculo.findVeiculoByFields(form.getPlaca(), form.getIdFabricante(), form.getIdModelo());
+            for(Veiculo v : veiculos) // carrega foto
+                v.getFoto();
+
             re = ResponseEntity
                 .status(HttpStatus.OK)
                 .headers(headers)
-                .body(modelos);
+                .body(veiculos);
         }
         return re;
     }
@@ -124,12 +129,18 @@ public class VeiculoController {
     public String veiculosSalvar(
         @ModelAttribute @Valid Veiculo veiculo, 
 		BindingResult br, 
+        @RequestParam("arquivoFoto") MultipartFile arquivoFoto, 
         final RedirectAttributes rAttrs
     ){
         if(br.hasErrors()){
             return "veiculo_form";
         }
         try{
+            if(!arquivoFoto.isEmpty()){
+                byte[] bytes = arquivoFoto.getBytes();
+                String mimeType = arquivoFoto.getContentType();
+                veiculo.setFoto(new Foto(bytes, mimeType));
+            }
             repositorioVeiculo.save(veiculo);
             rAttrs.addFlashAttribute("msgSucesso", "Veículo de placa " + veiculo.getPlaca() + " salvo com sucesso.");
         }catch(Exception ex){
@@ -138,4 +149,14 @@ public class VeiculoController {
         }
         return "redirect:/veiculos";
     }
+
+    @GetMapping("/{idVeiculo}/foto")
+	public ResponseEntity<byte[]> foto(@PathVariable Integer idVeiculo){
+        Foto foto = repositorioVeiculo.findById(idVeiculo).get().getFoto();
+		HttpHeaders headers = new HttpHeaders();
+		String[] tokens = foto.getMimeType().split("/");
+		MediaType mimeType = new MediaType(tokens[0], tokens[1]);
+		headers.setContentType(mimeType);
+		return new ResponseEntity<>(foto.getBytes(), headers, HttpStatus.OK);
+	}
 }

@@ -1,3 +1,15 @@
+body{
+    font-family: var(--sl-font-sans);
+}
+input{
+    font-family: var(--sl-font-sans);
+    font-size: var(--sl-input-font-size-medium);
+}
+input::file-selector-button {
+    height: auto;
+    min-height: var(--sl-input-height-medium);
+    font-size: var(--sl-button-font-size-medium);
+}
 figure{
     margin: 0;
 }

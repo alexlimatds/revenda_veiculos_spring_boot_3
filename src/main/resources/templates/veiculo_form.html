@@ -92,7 +92,7 @@
             <span th:text=${msgErro}></span>
         </sl-alert>
 
-        <form class="input-validation-required" action="#" th:action="@{/veiculos/salvar}" th:object="${veiculo}" method="post">
+        <form class="input-validation-required" action="#" th:action="@{/veiculos/salvar}" th:object="${veiculo}" method="post" enctype="multipart/form-data">
             <input type="hidden" th:value="*{id}" name="id">
             
             <sl-input name="placa" label="Placa" th:value="*{placa}"></sl-input>
@@ -108,6 +108,14 @@
             </sl-input>
             <input type="hidden" th:value="*{modelo?.id}" name="modelo">
             <p th:if="${#fields.hasErrors('modelo')}" th:errors="*{modelo}" class="campo-invalido">Mensagem</p>
+            <br>
+
+            <div>
+                <label>
+                    Foto <br>
+                    <input type="file" name="arquivoFoto" accept="image/*" class="form_control">
+                </label>
+            </div>
             <br>
 
             <sl-button variant="primary" type="submit">

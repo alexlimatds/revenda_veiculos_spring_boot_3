@@ -4,7 +4,7 @@
     <title>Revenda: Veículos</title> 
     <script>
         function confirmar(idVeiculo, placa){
-            const dialog = document.querySelector('.dialog-overview');
+            const dialog = document.querySelector('#dialogConfirmarExclusao');
             document.querySelector('#spanPlacaVeiculo').textContent = placa;
             const btnConfirmar = dialog.querySelector('#btnConfirmar');
             btnConfirmar.idVeiculo = idVeiculo;
@@ -24,6 +24,11 @@
         function limparAlertas(){
             document.querySelector("#alertErro").hide();
             document.querySelector("#alertSucesso").hide();
+        }
+        function verFoto(idVeiculo){
+            const imgUrl = `/veiculos/${idVeiculo}/foto`;
+            document.querySelector('#imgVeiculo').src = imgUrl;
+            document.querySelector('#dialogFoto').show();
         }
 
         var ready = (callback) => {
@@ -52,7 +57,7 @@
                 }
                 btnConfirmar.idVeiculo = null;
                 btnConfirmar.placa = null;
-                document.querySelector('.dialog-overview').hide();
+                document.querySelector('#dialogConfirmarExclusao').hide();
             });
             /* CAMPOS SELECT */
             const selectFabricante = document.querySelector('sl-select[name="idFabricante"]');
@@ -109,7 +114,12 @@
                             linha.id = `tr_${obj.id}`;
                             let colunas = `<td>${obj.placa}</td><td>${obj.anoFabricacao}</td><td>${obj.modelo.fabricante.descricao}</td>
                                 <td>${obj.modelo.descricao}</td><td>${obj.modelo.tipo.descricao}</td>`;
-                            colunas += `<td>TODO: Foto</td>`;
+                            if(obj.foto){
+                                colunas += `<td class="center"><sl-icon-button name="eye" label="ver foto" 
+                                    onclick="verFoto(${obj.id})"></sl-icon-button></td>`
+                            }
+                            else
+                                colunas += '<td class="center">Sem foto</td>';
                             colunas += `<td class="center"><sl-icon-button name="pencil" label="alterar" 
                                 href="/veiculos/form/${obj.id}"></sl-icon-button></td>`
                             colunas += `<td class="center"><sl-icon-button name="trash" label="excluir"
@@ -211,17 +221,21 @@
             </table>
         </figure>
 
-        <sl-dialog class="dialog-overview">
+        <sl-dialog id="dialogConfirmarExclusao">
             <sl-icon name="exclamation-triangle" slot="label"></sl-icon>
             Confirmar exclusão do veículo <strong id="spanPlacaVeiculo"></strong>?
             <sl-button slot="footer" variant="primary" id="btnConfirmar">
                 <sl-icon slot="prefix" name="check-circle"></sl-icon>
                 Sim
             </sl-button>
-            <sl-button slot="footer" variant="default" onclick="document.querySelector('.dialog-overview').hide()">
+            <sl-button slot="footer" variant="default" onclick="document.querySelector('#dialogConfirmarExclusao').hide()">
                 <sl-icon slot="prefix" name="x-circle"></sl-icon>
                 Cancelar
             </sl-button>
+        </sl-dialog>
+
+        <sl-dialog id="dialogFoto">
+            <img id="imgVeiculo">
         </sl-dialog>
     </div>
 </body>
