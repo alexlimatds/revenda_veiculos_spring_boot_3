@@ -108,9 +108,11 @@
                             let linha = document.createElement("tr");
                             linha.id = `tr_${obj.id}`;
                             let colunas = `<td>${obj.placa}</td><td>${obj.anoFabricacao}</td><td>${obj.modelo.fabricante.descricao}</td>
-                                <td>${obj.modelo.descricao}</td><td>${obj.modelo.tipo.descricao}</td>`
-                            colunas += `<td>TODO</td><td>TODO</td>`
-                            colunas += `<td class="center"><sl-icon-button name="trash" label="excluir" 
+                                <td>${obj.modelo.descricao}</td><td>${obj.modelo.tipo.descricao}</td>`;
+                            colunas += `<td>TODO: Foto</td>`;
+                            colunas += `<td class="center"><sl-icon-button name="pencil" label="alterar" 
+                                href="/veiculos/form/${obj.id}"></sl-icon-button></td>`
+                            colunas += `<td class="center"><sl-icon-button name="trash" label="excluir"
                                 onclick="confirmar(${obj.id}, '${obj.placa}')"></sl-icon-button></td>`;
                             linha.innerHTML = colunas;
                             tabela.appendChild(linha);
@@ -146,7 +148,7 @@
         </sl-alert>
 
         <p>
-            <sl-button href="/modelos/form" variant="primary">
+            <sl-button href="/veiculos/form" variant="primary">
                 <sl-icon slot="prefix" name="plus-circle"></sl-icon>
                 Cadastrar veículo
             </sl-button>

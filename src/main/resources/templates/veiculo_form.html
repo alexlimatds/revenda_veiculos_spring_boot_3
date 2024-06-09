@@ -1,0 +1,140 @@
+<!DOCTYPE HTML>
+<html th:replace="~{layout.html::layout(~{::title}, ~{::div.main}, ~{::script})}" xmlns:th="http://www.thymeleaf.org">
+<head> 
+    <title>Revenda: Veículo</title> 
+    <script>
+        function alertarErro(msg){
+            const alert = document.querySelector("#alertErro");
+            alert.querySelector("span").textContent = msg;
+            alert.show();
+        }
+        async function buscarModelos(idFabricante){
+            const selectModelo = document.querySelector('sl-select[name="idModeloSelecionado"]');
+            // remove opções de modelo atuais
+            const optionsModelo = selectModelo.querySelectorAll('sl-option');
+            for(const op of optionsModelo){
+                selectModelo.removeChild(op);
+            }
+            try{
+                const response = await fetch('/veiculos/modelos?idFabricante=' + idFabricante);
+                const data = await response.json();
+                for (const [i, obj] of Object.entries(data)) {
+                    let op = document.createElement("sl-option");
+                    op.value = obj.id;
+                    op.innerText = obj.descricao + " " + obj.tipo.descricao;
+                    selectModelo.appendChild(op);
+                };
+            }
+            catch(error){
+                console.log("Falha na requisição: " + error);
+                alertarErro("Ocorreu um erro.");
+            }
+            selectModelo.disabled = false;
+        }
+
+        var ready = (callback) => {
+            if (document.readyState != "loading") callback();
+            else document.addEventListener("DOMContentLoaded", callback);
+        }
+        ready(() => {
+            /* BOTÃO DE ABERTURA DE DIALOG */
+            const inputModelo = document.querySelector('#sl-modelo');
+            inputModelo.addEventListener('click', async event => {
+                const idModelo = document.querySelector('input[name="modelo"]').value;
+                if(idModelo){
+                    const idFabricante = document.querySelector('#idFabricante').value;
+                    document.querySelector('sl-select[name="idFabricanteSelecionado"]').value = idFabricante;
+                    await buscarModelos(idFabricante);
+                    document.querySelector('sl-select[name="idModeloSelecionado"]').value = idModelo;
+                }
+                document.querySelector('sl-dialog').show();
+            });
+            /* BOTÃO PARA CONFIRMAR SELEÇÃO DE MODELO */
+            const btnConfirmar = document.querySelector('#btnConfirmar');
+            btnConfirmar.addEventListener('click', event => {
+                // fabricante
+                const selectFabricanteSelecionado = document.querySelector('sl-select[name="idFabricanteSelecionado"]');
+                const idFabricante = selectFabricanteSelecionado.value;
+                document.querySelector('#idFabricante').value = idFabricante;
+                //modelo
+                const selectModeloSelecionado = document.querySelector('sl-select[name="idModeloSelecionado"]');
+                const idModelo = selectModeloSelecionado.value;
+                document.querySelector('input[name="modelo"]').value = idModelo;
+                optionsModelo = selectModeloSelecionado.querySelectorAll('sl-option');
+                optionsFabricante = selectFabricanteSelecionado.querySelectorAll('sl-option');
+                document.querySelector('#sl-modelo').value = 
+                    Array.from(optionsFabricante).filter(op => (op.value === idFabricante))[0].innerText + " " +
+                    Array.from(optionsModelo).filter(op => (op.value === idModelo))[0].innerText;
+                document.querySelector('sl-dialog').hide();
+            });
+            /* CAMPO FABRICANTE (DIALOG) */
+            const selectFabricante = document.querySelector('sl-select[name="idFabricanteSelecionado"]');
+            selectFabricante.addEventListener('sl-change', async event => {
+                document.querySelector('#btnConfirmar').disabled = true;
+                const idFabricante = selectFabricante.value;
+                await buscarModelos(idFabricante);
+            });
+            /* CAMPO MODELO (DIALOG) */
+            const selectModelo = document.querySelector('sl-select[name="idModeloSelecionado"]');
+            selectModelo.addEventListener('sl-change', event => {
+                document.querySelector('#btnConfirmar').disabled = false;
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="main">
+        <h2 th:if="${veiculo.id}" th:text="'Alterar Veículo'"/>
+        <h2 th:unless="${veiculo.id}" th:text="'Cadastrar Veículo'"/>
+
+        <sl-alert id="alertErro" variant="danger" th:open="${msgErro}">
+            <sl-icon slot="icon" name="exclamation-octagon"></sl-icon>
+            <span th:text=${msgErro}></span>
+        </sl-alert>
+
+        <form class="input-validation-required" action="#" th:action="@{/veiculos/salvar}" th:object="${veiculo}" method="post">
+            <input type="hidden" th:value="*{id}" name="id">
+            
+            <sl-input name="placa" label="Placa" th:value="*{placa}"></sl-input>
+            <p th:if="${#fields.hasErrors('placa')}" th:errors="*{placa}" class="campo-invalido">Mensagem</p>
+            <br>
+
+            <sl-input name="anoFabricacao" label="Ano de fabricação" th:value="*{anoFabricacao}"></sl-input>
+            <p th:if="${#fields.hasErrors('anoFabricacao')}" th:errors="*{anoFabricacao}" class="campo-invalido">Mensagem</p>
+            <br>
+            
+            <sl-input id="sl-modelo" label="Modelo" th:value="*{modelo}? *{modelo.fabricante.descricao + ' ' + modelo.descricao + ' ' + modelo.tipo.descricao}" readonly help-text="Clique para selecionar o modelo">
+                <sl-icon name="search" slot="prefix"></sl-icon-button>    
+            </sl-input>
+            <input type="hidden" th:value="*{modelo?.id}" name="modelo">
+            <p th:if="${#fields.hasErrors('modelo')}" th:errors="*{modelo}" class="campo-invalido">Mensagem</p>
+            <br>
+
+            <sl-button variant="primary" type="submit">
+                <sl-icon slot="prefix" name="floppy"></sl-icon>
+                Salvar
+            </sl-button>
+        </form>
+        <input type="hidden" th:value="${veiculo.modelo?.fabricante?.id}" id="idFabricante">
+
+        <sl-dialog label="Seleção de modelo">
+            <sl-select label="Fabricante" name="idFabricanteSelecionado">
+                <sl-option th:each="f : ${fabricantes}" th:value="${f.id}" th:text="${f.descricao}">Option 1</sl-option>
+            </sl-select>
+            <br>
+
+            <sl-select label="Modelo" name="idModeloSelecionado" placeholder="Selecione um fabricante para ativar este campo" disabled>
+            </sl-select>
+
+            <sl-button slot="footer" variant="primary" id="btnConfirmar" disabled>
+                <sl-icon slot="prefix" name="check-circle"></sl-icon>
+                Selecionar
+            </sl-button>
+            <sl-button slot="footer" variant="default" onclick="document.querySelector('sl-dialog').hide()">
+                <sl-icon slot="prefix" name="x-circle"></sl-icon>
+                Cancelar
+            </sl-button>
+        </sl-dialog>
+    </div>
+</body>
+</html>

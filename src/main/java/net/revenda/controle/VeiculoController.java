@@ -2,6 +2,7 @@ package net.revenda.controle;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -76,8 +77,7 @@ public class VeiculoController {
                 .body(body);
         }
         else{
-            // TODO : usar consulta
-            List<Veiculo> modelos = repositorioVeiculo.findAll();
+            List<Veiculo> modelos = repositorioVeiculo.findVeiculoByFields(form.getPlaca(), form.getIdFabricante(), form.getIdModelo());
             re = ResponseEntity
                 .status(HttpStatus.OK)
                 .headers(headers)
@@ -98,5 +98,44 @@ public class VeiculoController {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ex.getMessage());
         }
+    }
+
+    @GetMapping(value = {"/form", "/form/{id}"})
+    public String veiculoForm(
+        Model model, 
+        @PathVariable Optional<Integer> id
+    ){
+        Veiculo v = null;
+        if(id.isPresent()){ //edição
+            Optional<Veiculo> r = repositorioVeiculo.findById(id.get());
+            if(!r.isPresent())
+                throw new IllegalArgumentException("Id inválido");
+            v = r.get();
+        }
+        else{ //novo veículo
+            v = new Veiculo();
+        }
+        model.addAttribute("veiculo", v);
+        model.addAttribute("modelos", repositorioModelo.findAll());
+        return "veiculo_form";
+    }
+
+    @PostMapping("/salvar")
+    public String veiculosSalvar(
+        @ModelAttribute @Valid Veiculo veiculo, 
+		BindingResult br, 
+        final RedirectAttributes rAttrs
+    ){
+        if(br.hasErrors()){
+            return "veiculo_form";
+        }
+        try{
+            repositorioVeiculo.save(veiculo);
+            rAttrs.addFlashAttribute("msgSucesso", "Veículo de placa " + veiculo.getPlaca() + " salvo com sucesso.");
+        }catch(Exception ex){
+            ex.printStackTrace();
+            rAttrs.addFlashAttribute("msgErro", "Ocorreu um erro durante a operação.");
+        }
+        return "redirect:/veiculos";
     }
 }
