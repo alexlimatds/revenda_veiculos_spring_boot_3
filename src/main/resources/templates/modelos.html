@@ -3,25 +3,103 @@
 <head> 
     <title>Revenda: Modelos</title> 
     <script>
-        function confirmar(link, descricao){
+        function confirmar(idModelo, modelo){
             const dialog = document.querySelector('.dialog-overview');
-            document.querySelector('#spanNomeModelo').textContent = descricao;
+            document.querySelector('#spanNomeModelo').textContent = modelo;
             const btnConfirmar = dialog.querySelector('#btnConfirmar');
-            btnConfirmar.href = link;
+            btnConfirmar.idModelo = idModelo;
+            btnConfirmar.modelo = modelo;
             dialog.show();
         }
+        function alertarErro(msg){
+            const alert = document.querySelector("#alertErro");
+            alert.querySelector("span").textContent = msg;
+            alert.show();
+        }
+        function alertarSucesso(msg){
+            const alert = document.querySelector("#alertSucesso");
+            alert.querySelector("span").textContent = msg;
+            alert.show();
+        }
+        function limparAlertas(){
+            document.querySelector("#alertErro").hide();
+            document.querySelector("#alertSucesso").hide();
+        }
+
+        var ready = (callback) => {
+            if (document.readyState != "loading") callback();
+            else document.addEventListener("DOMContentLoaded", callback);
+        }
+        ready(() => {
+            /* BOTÃO PARA CONFIRMAR EXCLUSÃO DE VEÍCULO */
+            const btnConfirmar = document.querySelector('#btnConfirmar');
+            btnConfirmar.addEventListener('click', async event => {
+                limparAlertas();
+                try {
+                    const idModelo = btnConfirmar.idModelo;
+                    const response = await fetch('/modelos/excluir/' + idModelo);
+                    if(response.ok){
+                        alertarSucesso(`Modelo ${btnConfirmar.modelo} excluído com sucesso.`);
+                        const tr = document.querySelector(`#tr_${idModelo}`);
+                        document.querySelector('tbody').removeChild(tr);
+                    }
+                    else
+                        throw new Error(response.status);
+                } 
+                catch (error) {
+                    console.log("Falha na requisição: " + error);
+                    alertarErro("Ocorreu um erro");
+                }
+                btnConfirmar.idModelo = null;
+                btnConfirmar.modelo = null;
+                document.querySelector('.dialog-overview').hide();
+            });
+            /* FORMULÁRIO DE PESQUISA */
+            const form = document.querySelector("form");
+            form.addEventListener("submit", async (event) => {
+                event.preventDefault();
+                limparAlertas();
+                const form = document.querySelector('form');
+                const formData = new FormData(form);
+                const formAction = form.action;
+                try {
+                    const response = await fetch(
+                        formAction, 
+                        {
+                            method: 'POST', 
+                            body: formData
+                        });
+                    if(response.ok){
+                        data = await response.text();
+                        tabela = document.querySelector("table > tbody");
+                        tabela.innerHTML = data;
+                    }
+                    else if(response.status === 400){ // Bad request
+                        console.log('BAD REQUEST => ', response);
+                        msgErro = await response.text();
+                        alertarErro(msgErro);
+                    }
+                    else
+                        throw new Error(response.status);
+                }
+                catch(error){
+                    console.error('Requisição falhou: ', error);
+                    alertarErro('Ocorreu um erro');
+                }
+            });
+        });
     </script>
 </head>
 <body>
     <div class="main">
         <h2>Modelos</h2>
 
-        <sl-alert variant="success" open th:if="${msgSucesso}">
+        <sl-alert variant="success" th:open="${msgSucesso}" id="alertSucesso">
             <sl-icon slot="icon" name="check2-circle"></sl-icon>
             <span th:text=${msgSucesso}></span>
         </sl-alert>
 
-        <sl-alert variant="danger" open th:if="${msgErro}">
+        <sl-alert variant="danger" th:open="${msgErro}" id="alertErro">
             <sl-icon slot="icon" name="exclamation-octagon"></sl-icon>
             <span th:text=${msgErro}></span>
         </sl-alert>
@@ -35,7 +113,7 @@
 
         <sl-divider></sl-divider>
         
-        <form class="input-validation-required" action="#" th:action="@{/modelos/pesquisar}" th:object="${form}" method="get">
+        <form class="input-validation-required" th:action="@{/modelos/pesquisar}" th:object="${form}" method="post">
             <sl-input name="modelo" label="Modelo" th:value="*{modelo}" clearable></sl-input>
             <br>
             
@@ -67,7 +145,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="m: ${modelos}">
+                    <tr th:each="m: ${modelos}" th:fragment="linhas_tabela" th:id="${'tr_' + m.id}">
                         <td th:text="${m.descricao}">Pálio</td>
                         <td th:text="${m.tipo.descricao}">Hatch</td>
                         <td th:text="${m.fabricante.descricao}">Fiat</td>
@@ -77,7 +155,7 @@
                         </td>
                         
                         <td class="center">
-                            <sl-icon-button name="trash" label="excluir" th:onclick="confirmar([[@{'/modelos/excluir/'+${m.id}}]], [[${m.descricao}]])"></sl-icon-button>
+                            <sl-icon-button name="trash" label="excluir" th:onclick="confirmar([[${m.id}]], [[${m.descricao}]])"></sl-icon-button>
                         </td>
                     </tr>
                 </tbody>

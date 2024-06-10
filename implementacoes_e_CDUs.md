@@ -4,12 +4,15 @@
 - Renderização de HTML realizada no lado servidor (sem Ajax).
 
 ## CRUD Tipo de Veículo
-- TODO: descrever
+- Renderização de HTML realizada no lado servidor (sem Ajax).
 
 ## CRUD Modelos
-- TODO: usar Ajax sem JSON (gerar fragmentos de HTML no servidor)
+- Pesquisa de modelos usa JPA Criteria (consulta dinâmica);
+- Pesquisa de modelos usa Ajax sem JSON. O servidor retorna o fragamento de página a ser atualizada como HTML.
+- Uso de Ajax na exclusão de um veículo.
 
 ## CRUD Veículos
-- Pesquisa de veículos usa JPA Criteria;
-- Atualização dos campos de seleção realizada com Ajax e JSON;
-- Pesquisa de veículos realizada com Ajax. A atualização da tabela é realizada a partir dos dados em JSON retornados pelo servidor.
+- Pesquisa de veículos usa JPA Criteria (consulta dinâmica);
+- Uso de Ajax na atualização dos campos de seleção na página de pesquisa e de cadastro/edição;
+- Uso de Ajax na atualização da tabela após uma consulta. Servidor retorna dados em JSON;
+- Uso de Ajax na exclusão de um veículo.
