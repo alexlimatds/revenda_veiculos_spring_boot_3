@@ -141,7 +141,7 @@ public class VeiculoController {
                 String mimeType = arquivoFoto.getContentType();
                 veiculo.setFoto(new Foto(bytes, mimeType));
             }
-            else{
+            else if(veiculo.getId() != null){
                 veiculo.setFoto(
                     repositorioVeiculo.findById(veiculo.getId()).get().getFoto()
                 );
