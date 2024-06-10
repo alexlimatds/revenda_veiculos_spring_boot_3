@@ -201,22 +201,6 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="v: ${veiculos}">
-                        <td th:text="${v.placa}">MXR1611</td>
-                        <td th:text="${v.anoFabricacao}">2005</td>
-                        <td th:text="${v.fabricante.descricao}">Fiat</td>
-                        <td th:text="${v.modelo.descricao}">Uno</td>
-                        <td th:text="${v.modelo.tipo.descricao}">Hatch</td>
-                        <td>FOTO</td>
-                        
-                        <td class="center">
-                            <sl-icon-button name="pencil" label="alterar" th:href="@{'/veiculos/form/'+${v.id}}"></sl-icon-button>
-                        </td>
-                        
-                        <td class="center">
-                            <sl-icon-button name="trash" label="excluir" th:onclick="confirmar([[@{'/veiculos/excluir/'+${v.id}}]], [[${v.placa}]])"></sl-icon-button>
-                        </td>
-                    </tr>
                 </tbody>
             </table>
         </figure>
