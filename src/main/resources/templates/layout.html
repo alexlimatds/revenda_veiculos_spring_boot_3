@@ -12,7 +12,15 @@
 <body>
     <div>
         <header>
-            <h4><a href="/">Revenda de veículos</a></h4>
+            <div style="display: flex;  justify-content: space-between;  align-items: center;">
+                <h3><a href="/">Revenda de veículos</a></h3>
+                <div>
+                    <sl-button th:href="@{/logout}">
+                        <sl-icon slot="suffix" name="box-arrow-right"></sl-icon>
+                            Sair
+                        </sl-button>
+                </div>
+            </div>
             <nav>
                 <sl-button href="/veiculos">Veículos</sl-button>
                 <sl-button href="/modelos">Modelos</sl-button>

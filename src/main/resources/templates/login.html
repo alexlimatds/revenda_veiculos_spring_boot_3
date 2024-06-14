@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+	<head>
+		<title>Autenticação</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.0/cdn/themes/light.css" />
+        <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.0/cdn/shoelace-autoloader.js"></script>
+        <link href="/styles.css" rel="stylesheet">
+	</head>
+	<body>
+		<h1>Autenticação</h1>
+		<div th:if="${param.error}">
+			Usuário ou senha inválidos.
+        </div>
+		<div th:if="${param.logout}">
+			Você encerrou sua sessão.
+        </div>
+		<form th:action="@{/login}" method="post">
+			<label for="username">Usuário</label>
+			<input type="text" name="username" id="username" />
+			<br>
+			
+            <label for="password">Senha</label>
+			<input type="password" name="password" id="password"/>
+			<br>
+            
+			<input type="submit" value="Entrar" />
+		</form>
+	</body>
+</html>

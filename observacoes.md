@@ -63,6 +63,9 @@ Componentes Shoelace usam tags diferentes das tags HTML de campos de formulário
 A anotação `@EnableWebSecurity` aplica a configuração padrão de segurança do Spring para uma aplicação web - todos os endpoints (URLs?) da aplicação só podem ser acessadas por usuários autenticados. Note que é necessário usar `@Configuration` na classe de configuração do Spring Security.
 A anotação `@EnableMethodSecurity` habilita o uso das anotações de configuração para autorização de acesso.
 
+### Logout
+A implementação padrão define a URL `/logout`. Uma requisição GET `/logout` encaminha a aplicação para uma página de confirmação e NÃO invalida a autenticação do usuário. Para isso, deve ser realizada uma requisição POST `/logout`. Caso a proteção CSRF esteja ativada, é ncessário incluir o token CSRF na requisição POST.
+
 ## Submissão de formulários
 Formulários submetidos por meio de HTTP GET não necessitam do token CSRF.
 Formulários submetidos por meio de HTTP POST (e os outros métodos?) necessitam do token CSRF. Este token é inserido automaticamente pelo Thymeleaf quando a URL do formulário é indicada através do atributo `th:action`.
