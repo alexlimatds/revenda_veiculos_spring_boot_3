@@ -12,13 +12,15 @@
 <body>
     <div>
         <header>
-            <div style="display: flex;  justify-content: space-between;  align-items: center;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
                 <h3><a href="/">Revenda de veículos</a></h3>
                 <div>
-                    <sl-button th:href="@{/logout}">
-                        <sl-icon slot="suffix" name="box-arrow-right"></sl-icon>
+                    <form action="#" th:action="@{/logout}" method="post" id="formLogout">
+                        <sl-button type="submit">
+                            <sl-icon slot="suffix" name="box-arrow-right"></sl-icon>
                             Sair
                         </sl-button>
+                    </form>
                 </div>
             </div>
             <nav>

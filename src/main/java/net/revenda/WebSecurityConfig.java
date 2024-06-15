@@ -33,18 +33,10 @@ public class WebSecurityConfig {
                 //.requestMatchers("/db/**").access(allOf(hasAuthority("db"), hasRole("ADMIN")))   
                 .anyRequest().authenticated()
             )
-            .csrf(Customizer.withDefaults())
-            //.formLogin(withDefaults())
             .formLogin(form -> form
                 .loginPage(loginUrl)
                 .defaultSuccessUrl("/")
             );
-            /*.logout(logout -> logout
-                //.logoutSuccessUrl(loginUrl + "?logout")
-                .deleteCookies("JSESSIONID")
-                .invalidateHttpSession(true)
-                .permitAll()
-            );*/
 	    
         return http.build();
     }

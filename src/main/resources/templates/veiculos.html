@@ -91,11 +91,11 @@
                 }
             });
             /* FORMULÁRIO DE PESQUISA */
-            const form = document.querySelector("form");
+            const form = document.querySelector("#formPesquisa");
             form.addEventListener("submit", async (event) => {
                 event.preventDefault();
                 limparAlertas();
-                const form = document.querySelector('form');
+                const form = document.querySelector('#formPesquisa');
                 const formData = new FormData(form);
                 const formAction = form.action;
                 try {
@@ -166,7 +166,7 @@
 
         <sl-divider></sl-divider>
         
-        <form class="input-validation-required" action="#" th:action="@{/veiculos/pesquisar}" th:object="${form}" method="post">
+        <form class="input-validation-required" action="#" th:action="@{/veiculos/pesquisar}" th:object="${form}" method="post" id="formPesquisa">
             <sl-input name="placa" label="Placa" th:value="*{placa}" clearable></sl-input>
             <br>
 

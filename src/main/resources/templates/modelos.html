@@ -55,11 +55,11 @@
                 document.querySelector('.dialog-overview').hide();
             });
             /* FORMULÁRIO DE PESQUISA */
-            const form = document.querySelector("form");
+            const form = document.querySelector("#formPesquisa");
             form.addEventListener("submit", async (event) => {
                 event.preventDefault();
                 limparAlertas();
-                const form = document.querySelector('form');
+                const form = document.querySelector('#formPesquisa');
                 const formData = new FormData(form);
                 const formAction = form.action;
                 try {
@@ -113,7 +113,7 @@
 
         <sl-divider></sl-divider>
         
-        <form class="input-validation-required" th:action="@{/modelos/pesquisar}" th:object="${form}" method="post">
+        <form class="input-validation-required" th:action="@{/modelos/pesquisar}" th:object="${form}" method="post" id="formPesquisa">
             <sl-input name="modelo" label="Modelo" th:value="*{modelo}" clearable></sl-input>
             <br>
             

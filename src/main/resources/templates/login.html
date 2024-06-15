@@ -1,30 +1,39 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
 	<head>
-		<title>Autenticação</title>
+		<title>Revenda de Veículos</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.0/cdn/themes/light.css" />
         <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.0/cdn/shoelace-autoloader.js"></script>
         <link href="/styles.css" rel="stylesheet">
 	</head>
 	<body>
-		<h1>Autenticação</h1>
-		<div th:if="${param.error}">
-			Usuário ou senha inválidos.
-        </div>
-		<div th:if="${param.logout}">
-			Você encerrou sua sessão.
-        </div>
-		<form th:action="@{/login}" method="post">
-			<label for="username">Usuário</label>
-			<input type="text" name="username" id="username" />
-			<br>
+		<div>
+			<h3>Revenda de veículos</h3>
+			<h1>Autenticação</h1>
 			
-            <label for="password">Senha</label>
-			<input type="password" name="password" id="password"/>
-			<br>
-            
-			<input type="submit" value="Entrar" />
-		</form>
+			<sl-alert variant="primary" th:open="${param.logout}">
+				<sl-icon slot="icon" name="info-circle"></sl-icon>
+				Você encerrou sua sessão.
+			</sl-alert>
+
+			<sl-alert variant="danger" th:open="${param.error}">
+				<sl-icon slot="icon" name="exclamation-octagon"></sl-icon>
+				Usuário ou senha inválidos.
+			</sl-alert>
+
+			<form th:action="@{/login}" method="post" style="margin-top: 0.5em;">
+				<sl-input name="username" label="Usuário" clearable></sl-input>
+				<br>
+				
+				<sl-input name="password" label="Senha" type="password" clearable password-toggle></sl-input>
+				<br>
+				
+				<sl-button variant="success" type="submit">
+					<sl-icon slot="prefix" name="box-arrow-in-right"></sl-icon>
+					Entrar
+				</sl-button>
+			</form>
+		</div>
 	</body>
 </html>
