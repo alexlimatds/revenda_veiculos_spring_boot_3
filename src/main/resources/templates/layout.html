@@ -6,14 +6,14 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.0/cdn/themes/light.css" />
     <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.0/cdn/shoelace-autoloader.js"></script>
     
-    <link href="/styles.css" rel="stylesheet">
+    <link th:href="@{/styles.css}" rel="stylesheet">
     <script th:replace="${js}"></script>
 </head>
 <body>
     <div>
         <header>
             <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h3><a href="/">Revenda de veículos</a></h3>
+                <h3><a th:href="@{/}">Revenda de veículos</a></h3>
                 <div>
                     <form action="#" th:action="@{/logout}" method="post" id="formLogout">
                         <sl-button type="submit">
@@ -24,10 +24,10 @@
                 </div>
             </div>
             <nav>
-                <sl-button href="/veiculos">Veículos</sl-button>
-                <sl-button href="/modelos">Modelos</sl-button>
-                <sl-button href="/fabricantes">Fabricantes</sl-button>
-                <sl-button href="/tipos_veiculo">Tipos de veículo</sl-button>
+                <sl-button th:href="@{/veiculos}">Veículos</sl-button>
+                <sl-button th:href="@{/modelos}">Modelos</sl-button>
+                <sl-button th:href="@{/fabricantes}">Fabricantes</sl-button>
+                <sl-button th:href="@{/tipos_veiculo}">Tipos de veículo</sl-button>
             </nav>
         </header>
         <div th:replace="${conteudo}">

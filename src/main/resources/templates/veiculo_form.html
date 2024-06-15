@@ -2,7 +2,7 @@
 <html th:replace="~{layout.html::layout(~{::title}, ~{::div.main}, ~{::script})}" xmlns:th="http://www.thymeleaf.org">
 <head> 
     <title>Revenda: Veículo</title> 
-    <script>
+    <script th:inline="javascript">
         function alertarErro(msg){
             const alert = document.querySelector("#alertErro");
             alert.querySelector("span").textContent = msg;
@@ -16,7 +16,8 @@
                 selectModelo.removeChild(op);
             }
             try{
-                const response = await fetch('/veiculos/modelos?idFabricante=' + idFabricante);
+                const url = /*[[@{/veiculos/modelos?idFabricante=}]]*/ '';
+                const response = await fetch(url + idFabricante);
                 const data = await response.json();
                 for (const [i, obj] of Object.entries(data)) {
                     let op = document.createElement("sl-option");

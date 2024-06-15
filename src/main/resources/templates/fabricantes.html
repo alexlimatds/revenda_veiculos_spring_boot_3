@@ -27,7 +27,7 @@
         </sl-alert>
 
         <p>
-            <sl-button href="/fabricantes/form" variant="primary">
+            <sl-button th:href="@{/fabricantes/form}" variant="primary">
                 <sl-icon slot="prefix" name="plus-circle"></sl-icon>
                 Cadastrar fabricante
             </sl-button>
@@ -47,11 +47,11 @@
                         <td th:text="${f.descricao}">Fiat</td>
                         
                         <td class="center">
-                            <sl-icon-button name="pencil" label="alterar" th:href="@{'/fabricantes/form/'+${f.id}}"></sl-icon-button>
+                            <sl-icon-button name="pencil" label="alterar" th:href="@{/fabricantes/form/{id}(id=${f.id})}"></sl-icon-button>
                         </td>
                         
                         <td class="center">
-                            <sl-icon-button name="trash" label="excluir" th:onclick="confirmar([[@{'/fabricantes/excluir/'+${f.id}}]], [[${f.descricao}]])"></sl-icon-button>
+                            <sl-icon-button name="trash" label="excluir" th:onclick="confirmar([[@{/fabricantes/excluir/{id}(id=${f.id})}]], [[${f.descricao}]])"></sl-icon-button>
                         </td>
                     </tr>
                 </tbody>

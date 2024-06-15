@@ -60,13 +60,16 @@ Componentes Shoelace usam tags diferentes das tags HTML de campos de formulário
 </pre>
 
 ## Segurança
-A anotação `@EnableWebSecurity` aplica a configuração padrão de segurança do Spring para uma aplicação web - todos os endpoints (URLs?) da aplicação só podem ser acessadas por usuários autenticados. Note que é necessário usar `@Configuration` na classe de configuração do Spring Security.
+A anotação `@EnableWebSecurity` aplica a configuração padrão de segurança do Spring para uma aplicação web - todos os endpoints da aplicação só podem ser acessadas por usuários autenticados. Note que é necessário usar `@Configuration` na classe de configuração do Spring Security.
 A anotação `@EnableMethodSecurity` habilita o uso das anotações de configuração para autorização de acesso.
 
 ### Logout
 A implementação padrão define a URL `/logout`. Uma requisição GET `/logout` encaminha a aplicação para uma página de confirmação e NÃO invalida a autenticação do usuário. Para isso, deve ser realizada uma requisição POST `/logout`. Caso a proteção CSRF esteja ativada, é ncessário incluir o token CSRF na requisição POST.
 
-## Submissão de formulários
+### Proteção CSRF
+É habilitada por padrão.
+
+### Submissão de formulários
 Formulários submetidos por meio de HTTP GET não necessitam do token CSRF.
 Formulários submetidos por meio de HTTP POST (e os outros métodos?) necessitam do token CSRF. Este token é inserido automaticamente pelo Thymeleaf quando a URL do formulário é indicada através do atributo `th:action`.
 
@@ -92,7 +95,7 @@ If you are familiar with the Spring Test Framework, you may be used to using `@C
 
 The search algorithm works up from the package that contains the test until it finds a class annotated with `@SpringBootApplication` or `@SpringBootConfiguration`. As long as you structured your code in a sensible way, your main configuration is usually found.
 
-## `@DataJpaTest`
+### Anotação `@DataJpaTest`
 You can use the `@DataJpaTest` annotation to test JPA applications. By default, it scans for `@Entity` classes and configures Spring Data JPA repositories. If an embedded database is available on the classpath, it configures one as well. SQL queries are logged by default by setting the `spring.jpa.show-sql` property to `true`. This can be disabled using the `showSql` attribute of the annotation.
 
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataJpaTest` annotation is used. `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans. By default, data JPA tests are transactional and roll back at the end of each test. If that is not what you want, you can disable transaction management for a test or for the whole class.

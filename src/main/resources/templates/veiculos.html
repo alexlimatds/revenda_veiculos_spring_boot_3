@@ -2,7 +2,7 @@
 <html th:replace="~{layout.html::layout(~{::title}, ~{::div.main}, ~{::script})}" xmlns:th="http://www.thymeleaf.org">
 <head> 
     <title>Revenda: Veículos</title> 
-    <script>
+    <script th:inline="javascript">
         function confirmar(idVeiculo, placa){
             const dialog = document.querySelector('#dialogConfirmarExclusao');
             document.querySelector('#spanPlacaVeiculo').textContent = placa;
@@ -26,7 +26,8 @@
             document.querySelector("#alertSucesso").hide();
         }
         function verFoto(idVeiculo){
-            const imgUrl = `/veiculos/${idVeiculo}/foto`;
+            const veiculosUrl = /*[[@{/veiculos}]]*/ '';
+            const imgUrl = veiculosUrl + `/${idVeiculo}/foto`;
             document.querySelector('#imgVeiculo').src = imgUrl;
             document.querySelector('#dialogFoto').show();
         }
@@ -42,7 +43,8 @@
                 limparAlertas();
                 try {
                     const idVeiculo = btnConfirmar.idVeiculo;
-                    const response = await fetch('/veiculos/excluir/' + idVeiculo);
+                    const veiculosUrl = /*[[@{/veiculos}]]*/ '';
+                    const response = await fetch(veiculosUrl + '/excluir/' + idVeiculo);
                     if(response.ok){
                         alertarSucesso(`Veículo de placa ${btnConfirmar.placa} excluído com sucesso.`);
                         const tr = document.querySelector(`#tr_${idVeiculo}`);
@@ -158,7 +160,7 @@
         </sl-alert>
 
         <p>
-            <sl-button href="/veiculos/form" variant="primary">
+            <sl-button th:href="@{/veiculos/form}" variant="primary">
                 <sl-icon slot="prefix" name="plus-circle"></sl-icon>
                 Cadastrar veículo
             </sl-button>
