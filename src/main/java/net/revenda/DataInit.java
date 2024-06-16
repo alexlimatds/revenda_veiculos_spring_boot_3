@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import net.revenda.dominio.Fabricante;
@@ -14,6 +15,8 @@ import net.revenda.dominio.Modelo;
 import net.revenda.dominio.ModeloRepository;
 import net.revenda.dominio.TipoVeiculo;
 import net.revenda.dominio.TipoVeiculoRepository;
+import net.revenda.dominio.Usuario;
+import net.revenda.dominio.UsuarioRepository;
 import net.revenda.dominio.Veiculo;
 import net.revenda.dominio.VeiculoRepository;
 
@@ -29,6 +32,10 @@ public class DataInit {
     private ModeloRepository modeloRepository;
     @Autowired
     private VeiculoRepository veiculoRepository;
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @EventListener // indica que o método deve ser executado logo em seguida à inicialização do ApplicationContext
     public void onApplicationEvent(ContextRefreshedEvent event){
@@ -56,6 +63,17 @@ public class DataInit {
         nob3507.setAnoFabricacao(2011);
         nob3507.setModelo(onix);
         veiculoRepository.save(nob3507);
+
+        Usuario gerente = new Usuario(
+            null, "Valdir Silva", "11122233344", "84988880000", "valdir", 
+            passwordEncoder.encode("senha"), true, true
+        );
+        usuarioRepository.save(gerente);
+        Usuario vendedor = new Usuario(
+            null, "Ana Silva", "55566677788", "84999991122", "ana", 
+            passwordEncoder.encode("senha"), true, false
+        );
+        usuarioRepository.save(vendedor);
 
         System.out.println("DEV: registros inseridos no banco de dados");
     }

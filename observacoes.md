@@ -73,6 +73,14 @@ A implementação padrão define a URL `/logout`. Uma requisição GET `/logout`
 Formulários submetidos por meio de HTTP GET não necessitam do token CSRF.
 Formulários submetidos por meio de HTTP POST (e os outros métodos?) necessitam do token CSRF. Este token é inserido automaticamente pelo Thymeleaf quando a URL do formulário é indicada através do atributo `th:action`.
 
+### `DAOAuthenticationProvider`
+Em Spring Security, o processo de autenticação e autorização é realizado por objetos do tipo `AuthenticationProvider`por meio do método `authenticate(Authentication authentication)`. Caso a autenticação seja bem-sucedida, o método retorna um objeto do tipo `Authentication` representando o usuário autenticado. Em caso contrátio, o método gera uma `AuthenticationException`.
+
+`DaoAuthenticationProvider` é usado para autenticar usuários com base em login e senha. Ele compara login e senha fornecidos pelo usuário com aqueles obtidos de um banco de dados. Para usar `DaoAuthenticationProvider` é necessário prover uma implementação de `UserDetailsService` que recupera username, senha e autorizações de usuários armazenados no banco de dados. `DaoAuthenticationProvider` também requer o fornecimento de um `PasswordEncoder`. Além disso, é necessário configurar `DaoAuthenticationProvider` no arquivo de configuração do Spring Security.
+
+### Autorização
+Por padrão, os papeis devem ter o prefixo `ROLE_`. Exemplo: `ROLE_GERENTE`.
+
 ## Testes
 `spring-boot-starter-test` “Starter”, which imports both Spring Boot test modules as well as JUnit Jupiter (Junit 5), AssertJ, Hamcrest, and a number of other useful libraries.
 
