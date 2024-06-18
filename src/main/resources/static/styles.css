@@ -37,6 +37,9 @@ table tr:hover td {
 sl-divider{
     --color: black;
 }
+.checkbox-form{
+    margin-bottom: 1em;
+}
 @media screen and (min-width: 480px){
     body > div{
         max-width: 55em;

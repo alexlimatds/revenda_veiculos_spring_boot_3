@@ -1,0 +1,54 @@
+<!DOCTYPE HTML>
+<html th:replace="~{layout.html::layout(~{::title}, ~{::div.main}, ~{})}" xmlns:th="http://www.thymeleaf.org">
+<head> 
+    <title>Revenda: Usuário</title> 
+</head>
+<body>
+    <div class="main">
+        <h2 th:if="${usuarioForm.id}" th:text="'Alterar Usuário'"/>
+        <h2 th:unless="${usuarioForm.id}" th:text="'Cadastrar Usuário'"/>
+
+        <sl-alert variant="danger" th:open="${msgErro}" id="alertErro">
+            <sl-icon slot="icon" name="exclamation-octagon"></sl-icon>
+            <span th:text=${msgErro}></span>
+        </sl-alert>
+
+        <form class="input-validation-required" action="#" th:action="@{/usuarios/salvar}" th:object="${usuarioForm}" method="post">
+            <input type="hidden" th:value="*{id}" name="id">
+            
+            <sl-input name="nome" label="Nome" th:value="*{nome}"></sl-input>
+            <p th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}" class="campo-invalido">Mensagem</p>
+            <br>
+            
+            <sl-input name="cpf" label="CPF" th:value="*{cpf}"></sl-input>
+            <p th:if="${#fields.hasErrors('cpf')}" th:errors="*{cpf}" class="campo-invalido">Mensagem</p>
+            <br>
+
+            <sl-input name="telefone" label="Telefone" th:value="*{telefone}"></sl-input>
+            <p th:if="${#fields.hasErrors('telefone')}" th:errors="*{telefone}" class="campo-invalido">Mensagem</p>
+            <br>
+
+            <sl-input name="login" label="Login" th:value="*{login}" th:disabled="*{id}"></sl-input>
+            <p th:if="${#fields.hasErrors('login')}" th:errors="*{login}" class="campo-invalido">Mensagem</p>
+            <br>
+
+            <sl-input name="senha" label="Senha" th:value="*{senha}" type="password" th:unless="*{id}" password-toggle></sl-input>
+            <p th:if="${#fields.hasErrors('senha')}" th:errors="*{senha}" class="campo-invalido">Mensagem</p>
+            <br>
+
+            <sl-checkbox name="ativo" th:checked="*{id}? *{ativo} : true" class="checkbox-form">Ativo</sl-checkbox>
+            <input type="hidden" name="_ativo" th:value="*{id}? *{ativo} : true"> <!-- garante submissão do campo quando o mesmo está desmarcado -->
+            <br>
+
+            <sl-checkbox name="gerente" th:checked="*{gerente}" class="checkbox-form">Gerente</sl-checkbox>
+            <input type="hidden" name="_gerente" th:value="*{gerente}? true : false"> <!-- garante submissão do campo quando o mesmo está desmarcado -->
+            <br>
+
+            <sl-button variant="primary" type="submit">
+                <sl-icon slot="prefix" name="floppy"></sl-icon>
+                Salvar
+            </sl-button>
+        </form>
+    </div>
+</body>
+</html>

@@ -29,6 +29,7 @@
                 <sl-button th:href="@{/modelos}">Modelos</sl-button>
                 <sl-button th:href="@{/fabricantes}" sec:authorize="hasRole('ROLE_GERENTE')">Fabricantes</sl-button>
                 <sl-button th:href="@{/tipos_veiculo}" sec:authorize="hasRole('ROLE_GERENTE')">Tipos de veículo</sl-button>
+                <sl-button th:href="@{/usuarios}" sec:authorize="hasRole('ROLE_GERENTE')">Usuários</sl-button>
             </nav>
         </header>
         <div th:replace="${conteudo}">

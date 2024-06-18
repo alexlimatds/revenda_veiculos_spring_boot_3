@@ -71,7 +71,7 @@ public class ModeloController {
         }
         else{
             List<Modelo> modelos = repositorio.findModeloByFields(form.getModelo(), form.getIdFabricante(), form.getIdTipoVeiculo());
-            ModelAndView mv = new ModelAndView("modelos :: linhas_tabela");
+            ModelAndView mv = new ModelAndView("modelos :: linhas_tabela"); // retorna fragmento da view
             mv.addObject("modelos", modelos);
             return mv;
         }

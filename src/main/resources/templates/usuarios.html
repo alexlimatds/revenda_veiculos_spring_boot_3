@@ -1,0 +1,170 @@
+<!DOCTYPE HTML>
+<html th:replace="~{layout.html::layout(~{::title}, ~{::div.main}, ~{::script})}" xmlns:th="http://www.thymeleaf.org">
+<head> 
+    <title>Revenda: Usuários</title> 
+    <script th:inline="javascript">
+        function confirmar(idUsuario, nomeUsuario){
+            const dialog = document.querySelector('.dialog-overview');
+            document.querySelector('#spanNomeUsuario').textContent = nomeUsuario;
+            const btnConfirmar = dialog.querySelector('#btnConfirmar');
+            btnConfirmar.idUsuario = idUsuario;
+            btnConfirmar.nome = nomeUsuario;
+            dialog.show();
+        }
+        function alertarErro(msg){
+            const alert = document.querySelector("#alertErro");
+            alert.querySelector("span").textContent = msg;
+            alert.show();
+        }
+        function alertarSucesso(msg){
+            const alert = document.querySelector("#alertSucesso");
+            alert.querySelector("span").textContent = msg;
+            alert.show();
+        }
+        function limparAlertas(){
+            document.querySelector("#alertErro").hide();
+            document.querySelector("#alertSucesso").hide();
+        }
+
+        var ready = (callback) => {
+            if (document.readyState != "loading") callback();
+            else document.addEventListener("DOMContentLoaded", callback);
+        }
+        ready(() => {
+            /* BOTÃO PARA CONFIRMAR EXCLUSÃO DE USUÁRIO */
+            const btnConfirmar = document.querySelector('#btnConfirmar');
+            btnConfirmar.addEventListener('click', async event => {
+                limparAlertas();
+                try {
+                    const idUsuario = btnConfirmar.idUsuario;
+                    const url = /*[[@{/usuarios/excluir/}]]*/ '';
+                    const response = await fetch(url + idUsuario);
+                    if(response.ok){
+                        alertarSucesso(`Usuário ${btnConfirmar.nome} excluído com sucesso.`);
+                        const tr = document.querySelector(`#tr_${idUsuario}`);
+                        document.querySelector('tbody').removeChild(tr);
+                    }
+                    else
+                        throw new Error(response.status);
+                } 
+                catch (error) {
+                    console.log("Falha na requisição: " + error);
+                    alertarErro("Ocorreu um erro");
+                }
+                btnConfirmar.idUsuario = null;
+                btnConfirmar.nome = null;
+                document.querySelector('.dialog-overview').hide();
+            });
+            /* FORMULÁRIO DE PESQUISA */
+            const form = document.querySelector("#formPesquisa");
+            form.addEventListener("submit", async (event) => {
+                event.preventDefault();
+                limparAlertas();
+                const nome = document.querySelector('sl-input[name="nome"]').value;
+                const formAction = document.querySelector('#formPesquisa').action;
+                document.querySelector('sl-input[name="nome"]');
+                try {
+                    const response = await fetch(formAction + '?nome=' + nome);
+                    if(response.ok){
+                        data = await response.text();
+                        tabela = document.querySelector("table > tbody");
+                        tabela.innerHTML = data;
+                    }
+                    else if(response.status === 400){ // Bad request
+                        console.log('BAD REQUEST => ', response);
+                        msgErro = await response.text();
+                        alertarErro(msgErro);
+                    }
+                    else
+                        throw new Error(response.status);
+                }
+                catch(error){
+                    console.error('Requisição falhou: ', error);
+                    alertarErro('Ocorreu um erro');
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="main">
+        <h2>Usuários</h2>
+
+        <sl-alert variant="success" th:open="${msgSucesso}" id="alertSucesso">
+            <sl-icon slot="icon" name="check2-circle"></sl-icon>
+            <span th:text=${msgSucesso}></span>
+        </sl-alert>
+
+        <sl-alert variant="danger" th:open="${msgErro}" id="alertErro">
+            <sl-icon slot="icon" name="exclamation-octagon"></sl-icon>
+            <span th:text=${msgErro}></span>
+        </sl-alert>
+
+        <p>
+            <sl-button th:href="@{/usuarios/form}" variant="primary">
+                <sl-icon slot="prefix" name="plus-circle"></sl-icon>
+                Cadastrar usuário
+            </sl-button>
+        </p>
+
+        <sl-divider></sl-divider>
+        
+        <form class="input-validation-required" th:action="@{/usuarios/pesquisar}" method="get" id="formPesquisa">
+            <sl-input name="nome" label="Nome do usuário" clearable></sl-input>
+            <br>
+            
+            <sl-button variant="success" type="submit">
+                <sl-icon slot="prefix" name="search"></sl-icon>
+                Pesquisar
+            </sl-button>
+        </form>
+        
+        <figure>
+            <br>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>CPF</th>
+                        <th>Telefone</th>
+                        <th>Login</th>
+                        <th>Ativo</th>
+                        <th>Função</th>
+                        <th>Alterar</th>
+                        <th>Excluir</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="u: ${usuarios}" th:fragment="linhas_tabela" th:id="${'tr_' + u.id}">
+                        <td th:text="${u.nome}">Nome</td>
+                        <td th:text="${u.cpf}">CPF</td>
+                        <td th:text="${u.telefone}">Telefone</td>
+                        <td th:text="${u.login}">Login</td>
+                        <td th:text="${u.ativo ? 'Sim' : 'Não'}">Ativo</td>
+                        <td th:text="${u.gerente ? 'Gerente' : 'Vendedor'}">Função</td>
+                        <td class="center">
+                            <sl-icon-button name="pencil" label="alterar" th:href="@{'/usuarios/form/'+${u.id}}"></sl-icon-button>
+                        </td>
+                        <td class="center">
+                            <sl-icon-button name="trash" label="excluir" th:onclick="confirmar([[${u.id}]], [[${u.nome}]])"></sl-icon-button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </figure>
+
+        <sl-dialog class="dialog-overview">
+            <sl-icon name="exclamation-triangle" slot="label"></sl-icon>
+            Confirmar exclusão do usuário <strong id="spanNomeUsuario"></strong>?
+            <sl-button slot="footer" variant="primary" id="btnConfirmar">
+                <sl-icon slot="prefix" name="check-circle"></sl-icon>
+                Sim
+            </sl-button>
+            <sl-button slot="footer" variant="default" onclick="document.querySelector('.dialog-overview').hide()">
+                <sl-icon slot="prefix" name="x-circle"></sl-icon>
+                Cancelar
+            </sl-button>
+        </sl-dialog>
+    </div>
+</body>
+</html>
