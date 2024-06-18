@@ -1,0 +1,47 @@
+<!DOCTYPE HTML>
+<html th:replace="~{layout.html::layout(~{::title}, ~{::div.main}, ~{})}" xmlns:th="http://www.thymeleaf.org">
+<head> 
+    <title>Revenda: Alteração de senha</title> 
+</head>
+<body>
+    <div class="main">
+        <h2>Alteração de Senha</h2>
+
+        <sl-alert variant="danger" th:open="${msgErro}" id="alertErro">
+            <sl-icon slot="icon" name="exclamation-octagon"></sl-icon>
+            <span th:text=${msgErro}></span>
+        </sl-alert>
+
+        <form class="input-validation-required" action="#" th:action="@{/usuarios/alterar_senha}" th:object="${alterarSenhaForm}" method="post">
+            <input type="hidden" th:value="*{idUsuario}" name="idUsuario">
+            
+            <sl-input name="nomeUsuario" label="Nome do usuário" th:value="*{nomeUsuario}" disabled></sl-input>
+            <input type="hidden" th:value="*{nomeUsuario}" name="nomeUsuario">
+            <!-- 
+                O campo hidden é necessário para que o valor do campo seja submetido. Como o campo de texto 
+                está configurado com disabled, o valor do campo de texto não é submetido pelo navegador. 
+                Uma opção alternativa seria configurar o campo de texto com readonly ao invés de disabled. 
+                Neste caso, o navegador realizaria a submissão do valor do campo de texto.
+            -->
+            <br>
+
+            <sl-input name="login" label="Login" th:value="*{login}" disabled></sl-input>
+            <input type="hidden" th:value="*{login}" name="login">
+            <br>
+
+            <sl-input name="senha1" label="Nova senha" th:value="*{senha1}" type="password" password-toggle></sl-input>
+            <p th:if="${#fields.hasErrors('senha1')}" th:errors="*{senha1}" class="campo-invalido">Mensagem</p>
+            <br>
+
+            <sl-input name="senha2" label="Confirmar nova senha" th:value="*{senha2}" type="password" password-toggle></sl-input>
+            <p th:if="${#fields.hasErrors('senha2')}" th:errors="*{senha2}" class="campo-invalido">Mensagem</p>
+            <br>
+
+            <sl-button variant="primary" type="submit">
+                <sl-icon slot="prefix" name="floppy"></sl-icon>
+                Salvar
+            </sl-button>
+        </form>
+    </div>
+</body>
+</html>

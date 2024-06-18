@@ -9,5 +9,5 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer>, Usua
 
     public Usuario findByLogin(String login);
 
-    public List<Usuario> findByNomeIgnoreCaseContaining(String nome);
+    public List<Usuario> findByNomeIgnoreCaseContainingOrderByNomeAsc(String nome);
 }

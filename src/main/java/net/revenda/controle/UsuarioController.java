@@ -54,7 +54,7 @@ public class UsuarioController {
                 .body("Informe pelo menos um campo de pesquisa.");
         }
         else{
-            List<Usuario> usuarios = repositorio.findByNomeIgnoreCaseContaining(nome);
+            List<Usuario> usuarios = repositorio.findByNomeIgnoreCaseContainingOrderByNomeAsc(nome);
             ModelAndView mv = new ModelAndView("usuarios :: linhas_tabela");
             mv.addObject("usuarios", usuarios);
             return mv;
@@ -131,6 +131,47 @@ public class UsuarioController {
             return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ex.getMessage());
+        }
+    }
+
+    @GetMapping(value = {"/alterar_senha/{id}"})
+    public String alterarSenhaForm(
+        Model model, 
+        @PathVariable Integer id
+    ){
+        Usuario usuario = repositorio.findById(id).get();
+        if(usuario == null)
+            throw new IllegalArgumentException("Usuário não encontrado");
+        
+        AlterarSenhaForm alterarSenhaForm = new AlterarSenhaForm(usuario);
+        model.addAttribute("alterarSenhaForm", alterarSenhaForm);
+        return "alterar_senha";
+    }
+
+    @PostMapping(value = {"/alterar_senha"})
+    public String alterarSenhaSubmissao(
+        @ModelAttribute @Valid AlterarSenhaForm alterarSenhaForm, 
+		BindingResult br, 
+        final RedirectAttributes rAttrs, 
+        Model model
+    ){
+        if(br.hasErrors()){
+            if(!alterarSenhaForm.isSenhasValid())
+                model.addAttribute("msgErro", "As senhas não conferem");
+            return "alterar_senha";
+        }
+        try{
+            repositorio.alterarSenha(
+                alterarSenhaForm.getIdUsuario(), 
+                alterarSenhaForm.getSenha1()
+            );
+            rAttrs.addAttribute("msgSucesso", "Senha alterada com sucesso");
+            return "redirect:/usuarios";
+        }
+        catch(Exception ex){
+            ex.printStackTrace();
+            model.addAttribute("msgErro", "Ocorreu um erro");
+            return "alterar_senha";
         }
     }
 }

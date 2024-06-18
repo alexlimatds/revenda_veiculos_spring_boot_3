@@ -130,7 +130,8 @@
                         <th>Login</th>
                         <th>Ativo</th>
                         <th>Função</th>
-                        <th>Alterar</th>
+                        <th>Alterar Dados</th>
+                        <th>Alterar Senha</th>
                         <th>Excluir</th>
                     </tr>
                 </thead>
@@ -143,7 +144,10 @@
                         <td th:text="${u.ativo ? 'Sim' : 'Não'}">Ativo</td>
                         <td th:text="${u.gerente ? 'Gerente' : 'Vendedor'}">Função</td>
                         <td class="center">
-                            <sl-icon-button name="pencil" label="alterar" th:href="@{'/usuarios/form/'+${u.id}}"></sl-icon-button>
+                            <sl-icon-button name="pencil" label="alterar dados" th:href="@{'/usuarios/form/'+${u.id}}"></sl-icon-button>
+                        </td>
+                        <td class="center">
+                            <sl-icon-button name="pencil" label="alterar senha" th:href="@{'/usuarios/alterar_senha/'+${u.id}}"></sl-icon-button>
                         </td>
                         <td class="center">
                             <sl-icon-button name="trash" label="excluir" th:onclick="confirmar([[${u.id}]], [[${u.nome}]])"></sl-icon-button>

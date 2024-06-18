@@ -59,6 +59,24 @@ Componentes Shoelace usam tags diferentes das tags HTML de campos de formulário
 &lt;/form>
 </pre>
 
+## Campos de fomulário
+### Campos do tipo `checkbox`
+Este tipo de campo geralmente não é submetido pelo navegador quando o campo está desmarcado. Assim, o controlador web não recebe o valor do respectivo campo. Um backing bean com campo do tipo `Boolean` é atribuído com `null` ao invés de `false`. Para forçar a submissão do valor do checkbox, deve-se usar um campo hidden cujo valor do atributo `name` seja igual ao do checkbox mas precedido de um undescore (`_`).
+
+<pre>
+&lt;input <b>type="checkbox" name="ativo"</b> th:checked="*{id}? *{ativo} : true">
+&lt;input <b>type="hidden" name="_ativo"</b> th:value="*{id}? *{ativo} : true">
+</pre>
+
+### Campos desabilitados
+Campos marcados com `disabled` geralmente não são submetidos pelo navegador. Assim, o controlador web não recebe o valor do respectivo campo. Para forçar a submissão do valor do checkbox, pode se usar um campo do tipo `hidden` cujo valor do atributo `name` seja igual ao do campo marcado com `disabled`.
+
+<pre>
+&lt;input type="text" name="login" th:value="*{login}" disabled>
+&lt;input type="hidden" name="login" th:value="*{login}">
+</pre>
+
+
 ## Segurança
 A anotação `@EnableWebSecurity` aplica a configuração padrão de segurança do Spring para uma aplicação web - todos os endpoints da aplicação só podem ser acessadas por usuários autenticados. Note que é necessário usar `@Configuration` na classe de configuração do Spring Security.
 A anotação `@EnableMethodSecurity` habilita o uso das anotações de configuração para autorização de acesso.
@@ -80,6 +98,16 @@ Em Spring Security, o processo de autenticação e autorização é realizado po
 
 ### Autorização
 Por padrão, os papeis devem ter o prefixo `ROLE_`. Exemplo: `ROLE_GERENTE`.
+
+### `PasswordEncoder`
+Beans podem ser definidos por meio de métodos estáticos. Isso é útil para evitar referências circulares durante a instanciação dos beans. É comum declarar um `PasswordEncoder` por meio de um método estático justamente para evitar referências circulares.
+
+<pre>
+@Bean
+public <b>static</b> PasswordEncoder passwordEncoder(){
+    return new BCryptPasswordEncoder();
+}
+</pre>
 
 ## Testes
 `spring-boot-starter-test` “Starter”, which imports both Spring Boot test modules as well as JUnit Jupiter (Junit 5), AssertJ, Hamcrest, and a number of other useful libraries.

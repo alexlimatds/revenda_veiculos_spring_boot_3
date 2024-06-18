@@ -1,12 +1,19 @@
 package net.revenda.dominio;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 
 public class UsuarioRepositoryCustomImpl implements UsuarioRepositoryCustom{
     
     @PersistenceContext
     private EntityManager entityManager;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public <S extends Usuario> S save(S usuario) {
@@ -25,5 +32,17 @@ public class UsuarioRepositoryCustomImpl implements UsuarioRepositoryCustom{
         }
         entityManager.merge(usuario);
         return usuario;
+    }
+
+    @Override
+    @Transactional
+    public void alterarSenha(Integer idUsuario, String novaSenha) {
+        Usuario usuario = entityManager.find(Usuario.class, idUsuario);
+        if(usuario == null)
+            throw new IllegalArgumentException("Usuário não encontrado");
+        usuario.setSenha(
+            passwordEncoder.encode(novaSenha)
+        );
+        entityManager.merge(usuario);
     }
 }
