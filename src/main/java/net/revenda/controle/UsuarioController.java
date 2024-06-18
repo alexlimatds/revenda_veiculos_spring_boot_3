@@ -103,9 +103,7 @@ public class UsuarioController {
             usuario.setAtivo(usuarioForm.getAtivo());
             usuario.setGerente(usuarioForm.getGerente());
             usuario.setLogin(usuarioForm.getLogin());
-            usuario.setSenha(
-                passwordEncoder.encode(usuarioForm.getSenha())
-            );
+            usuario.setSenha(usuarioForm.getSenha()); //codificação de senha realizada pelo repositório
             repositorio.save(usuario);
             rAttrs.addFlashAttribute("msgSucesso", "Usuário salvo com sucesso.");
         }

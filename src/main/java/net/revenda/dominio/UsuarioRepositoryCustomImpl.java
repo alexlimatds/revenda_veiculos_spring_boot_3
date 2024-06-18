@@ -14,7 +14,7 @@ public class UsuarioRepositoryCustomImpl implements UsuarioRepositoryCustom{
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-
+    
     @Override
     public <S extends Usuario> S save(S usuario) {
         if(usuario.getId() != null){
@@ -23,12 +23,17 @@ public class UsuarioRepositoryCustomImpl implements UsuarioRepositoryCustom{
             usuario.setSenha(usuarioEmBanco.getSenha());
         }
         else{
-            // valida login
-            long count = (long)entityManager.createQuery("SELECT COUNT(u.id) from Usuario u WHERE u.login = :param")
+            // verifica se o login está disponível
+            long count = (long)entityManager
+                .createQuery("SELECT COUNT(u.id) from Usuario u WHERE u.login = :param")
                 .setParameter("param", usuario.getLogin())
                 .getSingleResult();
             if(count != 0)
                 throw new LoginIndisponivelException("Login não disponível");
+            else
+                usuario.setSenha(
+                    passwordEncoder.encode(usuario.getSenha())
+                );
         }
         entityManager.merge(usuario);
         return usuario;

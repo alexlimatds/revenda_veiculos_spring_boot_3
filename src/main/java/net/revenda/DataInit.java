@@ -66,12 +66,12 @@ public class DataInit {
 
         Usuario gerente = new Usuario(
             null, "Valdir Silva", "11122233344", "84988880000", "valdir", 
-            passwordEncoder.encode("senha"), true, true
+            "senha", true, true
         );
         usuarioRepository.save(gerente);
         Usuario vendedor = new Usuario(
             null, "Ana Silva", "55566677788", "84999991122", "ana", 
-            passwordEncoder.encode("senha"), true, false
+            "senha", true, false
         );
         usuarioRepository.save(vendedor);
 

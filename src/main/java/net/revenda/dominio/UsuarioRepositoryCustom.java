@@ -5,7 +5,7 @@ public interface UsuarioRepositoryCustom {
     /**
      * Insere ou atualiza um usuário na base de dados.
      * @param <S>
-     * @param usuario
+     * @param usuario No caso de um novo usário, a senha NÃO deve estar codificada. A codificação será realizada por esta operação.
      * @return
      */
     public <S extends Usuario> S save(S usuario);
@@ -13,7 +13,7 @@ public interface UsuarioRepositoryCustom {
     /**
      * Altera a senha de um usuário.
      * @param idUsuario
-     * @param novaSenha Não deve estar codificada. A codificação será realizada por esta operação.
+     * @param novaSenha NÃO deve estar codificada. A codificação será realizada por esta operação.
      */
     public void alterarSenha(Integer idUsuario, String novaSenha);
 }
