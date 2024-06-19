@@ -10,7 +10,7 @@
 
         <sl-alert variant="danger" th:open="${msgErro}" id="alertErro">
             <sl-icon slot="icon" name="exclamation-octagon"></sl-icon>
-            <span th:text=${msgErro}></span>
+            <span th:utext=${msgErro}></span>
         </sl-alert>
 
         <form class="input-validation-required" action="#" th:action="@{/usuarios/salvar}" th:object="${usuarioForm}" method="post">
@@ -29,10 +29,12 @@
             <br>
 
             <sl-input name="login" label="Login" th:value="*{login}" th:disabled="*{id}"></sl-input>
+            <input th:if="*{id}" type="hidden" name="login" th:value="*{login}"> <!--/* para forçar a submissão do campo na edição e evitar erros de validação */-->
             <p th:if="${#fields.hasErrors('login')}" th:errors="*{login}" class="campo-invalido">Mensagem</p>
             <br>
 
             <sl-input name="senha" label="Senha" th:value="*{senha}" type="password" th:unless="*{id}" password-toggle></sl-input>
+            <input th:if="*{id}" type="hidden" name="senha" th:value="lorem_ipsum"> <!--/* para forçar a submissão do campo na edição e evitar erros de validação */-->
             <p th:if="${#fields.hasErrors('senha')}" th:errors="*{senha}" class="campo-invalido">Mensagem</p>
             <br>
 

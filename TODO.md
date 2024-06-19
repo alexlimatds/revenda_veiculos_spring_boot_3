@@ -1,4 +1,3 @@
--Cadastro de novo de usuário: não mostra mensagens de validação dos campos senha e login.
 -Formatação de CPF.
 -Testes: acesso a URLs não permitidas e a URLs permitidas.
 -Login: impedir login de usuário inativo.

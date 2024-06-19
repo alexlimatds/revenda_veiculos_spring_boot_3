@@ -1,6 +1,5 @@
 package net.revenda.controle;
 
-import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -17,8 +16,10 @@ public class UsuarioForm {
 	
     private String telefone;
 	
+    @NotBlank
 	private String login;
 	
+    @NotBlank
 	private String senha;
 	
     @NotNull
@@ -81,19 +82,5 @@ public class UsuarioForm {
     }
     public void setGerente(Boolean gerente) {
         this.gerente = gerente;
-    }
-
-    @AssertTrue(message="Informe o login")
-    public boolean isLoginValid(){
-        if(id == null)
-            return  login != null && !login.isEmpty();
-        return true;
-    }
-
-    @AssertTrue(message="Informe a senha")
-    public boolean isSenhaValid(){
-        if(id == null)
-            return  senha != null && !senha.isEmpty();
-        return true;
     }
 }

@@ -8,7 +8,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -32,9 +31,6 @@ public class UsuarioController {
     
     @Autowired
     private UsuarioRepository repositorio;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     @GetMapping
     public String usuarios(Model model){
@@ -106,16 +102,21 @@ public class UsuarioController {
             usuario.setSenha(usuarioForm.getSenha()); //codificação de senha realizada pelo repositório
             repositorio.save(usuario);
             rAttrs.addFlashAttribute("msgSucesso", "Usuário salvo com sucesso.");
+            return "redirect:/usuarios";
         }
         catch(LoginIndisponivelException ex){
-            model.addAttribute("msgErro", "Login indisponível.");
-            return "usuario_form";
+            String login = usuarioForm.getLogin();
+            usuarioForm.setLogin(null);
+            model.addAttribute(
+                "msgErro", 
+                "O login <b>"+login+"</b> não está disponível."
+            );
         }
         catch(Exception ex){
             ex.printStackTrace();
-            rAttrs.addFlashAttribute("msgErro", "Ocorreu um erro durante a operação.");
+            model.addAttribute("msgErro", "Ocorreu um erro durante a operação.");
         }
-        return "redirect:/usuarios";
+        return "usuario_form";
     }
 
     @GetMapping("/excluir/{id}")
