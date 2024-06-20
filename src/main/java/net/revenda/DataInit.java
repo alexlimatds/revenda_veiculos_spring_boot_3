@@ -34,8 +34,6 @@ public class DataInit {
     private VeiculoRepository veiculoRepository;
     @Autowired
     private UsuarioRepository usuarioRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     @EventListener // indica que o método deve ser executado logo em seguida à inicialização do ApplicationContext
     public void onApplicationEvent(ContextRefreshedEvent event){
