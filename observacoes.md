@@ -136,4 +136,8 @@ You can use the `@DataJpaTest` annotation to test JPA applications. By default, 
 
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataJpaTest` annotation is used. `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans. By default, data JPA tests are transactional and roll back at the end of each test. If that is not what you want, you can disable transaction management for a test or for the whole class.
 
+### Anotações `@DataJpaTest` e `@SpringBootTest`
+`@SpringBootTest` carrega o contexto completo da aplicação, enquanto que `@DataJpaTest` carrega somente as partes do contextos necessárias ao functionamento dos recursos JPA.
+
+### Arquivo `application.properties` para testes
 The standard properties file that Spring Boot picks up automatically when running an application is called `application.properties`. It resides in the `src/main/resources` folder. If we want to use different properties for tests, we can override the properties file in the main folder by placing another file with the same name in `src/test/resources`. The `application.properties` file in the `src/test/resources` folder should contain the standard key-value pairs necessary for configuring a data source. These properties are prefixed with spring.datasource.
