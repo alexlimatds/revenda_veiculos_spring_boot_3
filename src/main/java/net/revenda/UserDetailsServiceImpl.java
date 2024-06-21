@@ -14,7 +14,7 @@ import net.revenda.dominio.Usuario;
 import net.revenda.dominio.UsuarioRepository;
 
 @Service
-public class UserDetailServiceImpl implements UserDetailsService{
+public class UserDetailsServiceImpl implements UserDetailsService{
 
     @Autowired
     private UsuarioRepository repository;
@@ -28,7 +28,7 @@ public class UserDetailServiceImpl implements UserDetailsService{
         List<SimpleGrantedAuthority> permissoes = new ArrayList<>();
         if(usuario.isGerente())
             permissoes.add(new SimpleGrantedAuthority("ROLE_GERENTE"));
-        return new MyUserDetail(username, usuario.getSenha(), permissoes, usuario);
+        return new MyUserDetails(username, usuario.getSenha(), permissoes, usuario);
     }
     
 }

@@ -141,3 +141,88 @@ Regular `@Component` and `@ConfigurationProperties` beans are not scanned when t
 
 ### Arquivo `application.properties` para testes
 The standard properties file that Spring Boot picks up automatically when running an application is called `application.properties`. It resides in the `src/main/resources` folder. If we want to use different properties for tests, we can override the properties file in the main folder by placing another file with the same name in `src/test/resources`. The `application.properties` file in the `src/test/resources` folder should contain the standard key-value pairs necessary for configuring a data source. These properties are prefixed with spring.datasource.
+
+### Autenticação e usuários mock
+Em testes que verificam autenticação e autorização de acesso a endpoints, podemos usar as anotações `@WithMockUser` e `@WithUserDetails`.
+
+A anotação `@WithMockUser` é usada para indicar que o acesso está sendo feito por um usário autenticado.
+
+<pre>
+@Test
+@WithMockUser("customUsername")
+public void getMessageWithMockUserCustomUsername() {
+   ...
+}
+</pre>
+
+É possível indicar username e papéis por meio dos atributos `username` e `roles`.
+
+<pre>
+@Test
+@WithMockUser(username="admin", roles={"USER", "ADMIN"})
+public void getMessageWithMockUserCustomUser() {
+   ...
+}
+</pre>
+
+`@WithUserDetails` entrega um objeto principal do tipo `User` com username `user` (quando o username não é fornecido), senha `password` e papel `ROLE_USER`.
+
+A anotação `@WithUserDetails` pode ser usada para indicar o `UserDetailsService` que será utilizado para obter um usuário a partir de um determinado login. Essa opção é útil quando o teste precisa que o objeto com as informações do usuário seja específico (i.e., diferente de `User`).
+
+<pre>
+@Test
+@WithUserDetails(value = "ana")
+void modelosWhenAuthenticatedThenAuthorized() throws Exception {
+    this.mockMvc
+        .perform(get("/modelos"))
+        .andExpect(status().isOk());
+}
+</pre>
+
+### Definindo um `UserDetailsService` específico para testes
+
+A anotação `@TestConfiguration` pode ser utilizada para definir beans e configurações adicionais em contexto de testes. Classes marcadas com `@TestConfiguration` não são carregadas automaticamente pelo contexto. Para isso, devemos usar o atributo `classes` em `@SpringBootTest`.
+
+A anotação `@Primary` indica que o bean terá prioridade sobre o bean de mesmo tipo definido na configuração padrão.
+
+<pre>
+<b>@TestConfiguration</b>
+public class WebSecurityMockConfig {
+    
+    @Bean
+    <b>@Primary</b>
+    public UserDetailsService mockUserDetailsService(){
+        Map<String, UserDetails> usuarios = new HashMap<>();
+        List<SimpleGrantedAuthority> permissoes = new ArrayList<>();
+        permissoes.add(new SimpleGrantedAuthority("ROLE_GERENTE"));
+        usuarios.put(
+            "valdir", 
+            new MyUserDetails(
+                "valdir", 
+                "senha", 
+                permissoes, 
+                new Usuario(1, "Valdir Silva", "44455566600", null, "valdir", "senha", true, true)
+            )
+        );
+
+        return new UserDetailsService() {
+            @Override
+            public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+                UserDetails ud = usuarios.get(username);
+                if(ud == null)
+                    throw new UsernameNotFoundException(username);
+                return ud;
+            }
+            
+        };
+        
+    }
+}
+</pre>
+<pre>
+<b>@SpringBootTest(classes = WebSecurityMockConfig.class)</b>
+@AutoConfigureMockMvc
+public class AuthorizationMockTests {
+   ...
+}
+</pre>

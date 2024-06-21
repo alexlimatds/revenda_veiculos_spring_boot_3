@@ -1,43 +1,27 @@
 package net.revenda.controle;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Profile;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultMatcher;
-import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
-import net.revenda.MyUserDetail;
-import net.revenda.dominio.Usuario;
+import net.revenda.WebSecurityMockConfig;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.*;
-
-import java.util.ArrayList;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
-import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.*;
-
-@SpringBootTest
+@SpringBootTest(classes = WebSecurityMockConfig.class)
 @AutoConfigureMockMvc
 public class AuthorizationMockTests {
     
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private UserDetailsService userDetailsService;
 
     @Test
     void anyWhenUnauthenticatedThenUnauthorized() throws Exception {
@@ -68,21 +52,8 @@ public class AuthorizationMockTests {
     }
 
     @Test
-    //@WithUserDetails("user")
+    @WithUserDetails(value = "ana")
     void modelosWhenAuthenticatedThenAuthorized() throws Exception {
-        // fixture
-        Usuario usuario = new Usuario(null, "Nome Stub", null, null, null, null, null, null);
-        Mockito.when(
-            userDetailsService.loadUserByUsername(any())
-        ).thenReturn(
-            new MyUserDetail(
-                "username", 
-                "senha", 
-                new ArrayList<SimpleGrantedAuthority>(), 
-                usuario
-            )
-        );
-        // assert
         this.mockMvc
             .perform(get("/modelos"))
             .andExpect(status().isOk());
@@ -105,7 +76,7 @@ public class AuthorizationMockTests {
     }
 
     @Test
-    @WithMockUser(roles={"GERENTE"})
+    @WithUserDetails(value = "valdir")
     void accessUsuariosPageWhenAuthorized() throws Exception {
         this.mockMvc
             .perform(get("/usuarios"))
