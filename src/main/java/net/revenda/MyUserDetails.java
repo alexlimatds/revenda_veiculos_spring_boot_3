@@ -18,4 +18,9 @@ public class MyUserDetails extends org.springframework.security.core.userdetails
     public Usuario getUsuario() {
         return usuario;
     }
+
+    @Override
+    public boolean isEnabled() {
+        return usuario.isAtivo();
+    }
 }

@@ -22,7 +22,7 @@ public class UserDetailsServiceImpl implements UserDetailsService{
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Usuario usuario = repository.findByLogin(username);
-        if(usuario == null || !usuario.isAtivo())
+        if(usuario == null)
             throw new UsernameNotFoundException("Usuário não encontrado");
         
         List<SimpleGrantedAuthority> permissoes = new ArrayList<>();

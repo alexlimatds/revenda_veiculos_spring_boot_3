@@ -1,2 +1,1 @@
 -Formatação de CPF.
--Login: impedir login de usuário inativo.
