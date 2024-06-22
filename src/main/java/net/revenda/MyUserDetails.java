@@ -10,8 +10,8 @@ public class MyUserDetails extends org.springframework.security.core.userdetails
 
     private Usuario usuario;
 
-    public MyUserDetails(String username, String password, Collection<? extends GrantedAuthority> authorities, Usuario usuario) {
-        super(username, password, authorities);
+    public MyUserDetails(Collection<? extends GrantedAuthority> authorities, Usuario usuario) {
+        super(usuario.getLogin(), usuario.getSenha(), authorities);
         this.usuario = usuario;
     }
 

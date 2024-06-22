@@ -24,8 +24,6 @@ public class WebSecurityMockConfig {
         usuarios.put(
             "ana", 
             new MyUserDetails(
-                "ana", 
-                "senha", 
                 new ArrayList<SimpleGrantedAuthority>(), 
                 new Usuario(1, "Ana Silva", "11122233300", null, "ana", "senha", true, false)
             )
@@ -35,8 +33,6 @@ public class WebSecurityMockConfig {
         usuarios.put(
             "valdir", 
             new MyUserDetails(
-                "valdir", 
-                "senha", 
                 permissoes, 
                 new Usuario(1, "Valdir Silva", "44455566600", null, "valdir", "senha", true, true)
             )

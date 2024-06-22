@@ -28,7 +28,7 @@ public class UserDetailsServiceImpl implements UserDetailsService{
         List<SimpleGrantedAuthority> permissoes = new ArrayList<>();
         if(usuario.isGerente())
             permissoes.add(new SimpleGrantedAuthority("ROLE_GERENTE"));
-        return new MyUserDetails(username, usuario.getSenha(), permissoes, usuario);
+        return new MyUserDetails(permissoes, usuario);
     }
     
 }

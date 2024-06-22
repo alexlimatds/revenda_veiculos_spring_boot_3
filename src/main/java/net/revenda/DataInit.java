@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import net.revenda.dominio.Fabricante;
@@ -21,7 +20,7 @@ import net.revenda.dominio.Veiculo;
 import net.revenda.dominio.VeiculoRepository;
 
 @Component
-@Profile("dev") // This bean will be managed in the dev profile only
+@Profile("dev") // Este bean estará disponível somente quando o perfil dev estiver em uso
 public class DataInit {
     
     @Autowired
