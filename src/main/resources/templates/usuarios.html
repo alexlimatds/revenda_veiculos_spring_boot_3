@@ -138,7 +138,7 @@
                 <tbody>
                     <tr th:each="u: ${usuarios}" th:fragment="linhas_tabela" th:id="${'tr_' + u.id}">
                         <td th:text="${u.nome}">Nome</td>
-                        <td th:text="${u.cpf}">CPF</td>
+                        <td th:text="${{u.cpf}}">CPF</td>
                         <td th:text="${u.telefone}">Telefone</td>
                         <td th:text="${u.login}">Login</td>
                         <td th:text="${u.ativo ? 'Sim' : 'Não'}">Ativo</td>

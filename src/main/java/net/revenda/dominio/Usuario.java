@@ -1,13 +1,13 @@
 package net.revenda.dominio;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 
 /**
  * Representa um usuário do sistema.
@@ -22,8 +22,8 @@ public class Usuario {
     @NotBlank
 	private String nome;
 
-	@Pattern(regexp="\\d{11}")
-	private String cpf;
+    @Embedded
+	private CPF cpf;
 	
     private String telefone;
 	
@@ -43,11 +43,11 @@ public class Usuario {
 	public Usuario(){
 	}
 
-    public Usuario(Integer id, String nome, String cpf, String telefone,
+    public Usuario(Integer id, String nome, String numeroCpf, String telefone,
             String login, String senha, Boolean ativo, Boolean gerente) {
         this.id = id;
         this.nome = nome;
-        this.cpf = cpf;
+        this.cpf = new CPF(numeroCpf);
         this.telefone = telefone;
         this.login = login;
         this.senha = senha;
@@ -71,11 +71,11 @@ public class Usuario {
 		this.nome = nome;
 	}
 
-	public String getCpf() {
+	public CPF getCpf() {
 		return cpf;
 	}
 
-	public void setCpf(String cpf) {
+	public void setCpf(CPF cpf) {
 		this.cpf = cpf;
 	}
 

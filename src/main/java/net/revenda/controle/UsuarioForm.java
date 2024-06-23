@@ -2,7 +2,7 @@ package net.revenda.controle;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
+import net.revenda.dominio.CPF;
 
 public class UsuarioForm {
     
@@ -10,9 +10,9 @@ public class UsuarioForm {
 
     @NotBlank
 	private String nome;
-
-	@Pattern(regexp="\\d{11}")
-	private String cpf;
+    
+    @NotNull(message = "Campo obrigatório")
+	private CPF cpf;
 	
     private String telefone;
 	
@@ -42,10 +42,10 @@ public class UsuarioForm {
         this.nome = nome;
     }
 
-    public String getCpf() {
+    public CPF getCpf() {
         return cpf;
     }
-    public void setCpf(String cpf) {
+    public void setCpf(CPF cpf) {
         this.cpf = cpf;
     }
 

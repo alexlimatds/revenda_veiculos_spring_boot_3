@@ -21,7 +21,7 @@
             <br>
             
             <sl-input name="cpf" label="CPF" th:value="*{cpf}"></sl-input>
-            <p th:if="${#fields.hasErrors('cpf')}" th:errors="*{cpf}" class="campo-invalido">Mensagem</p>
+            <p th:if="${#fields.hasErrors('cpf')}" th:text="'CPF inválido'" class="campo-invalido">Mensagem</p>
             <br>
 
             <sl-input name="telefone" label="Telefone" th:value="*{telefone}"></sl-input>
