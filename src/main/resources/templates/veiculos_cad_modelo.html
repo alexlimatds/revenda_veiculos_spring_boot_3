@@ -1,0 +1,19 @@
+<!DOCTYPE HTML>
+<html th:replace="~{layout.html::layout(~{::title}, ~{::div.main}, ~{})}" xmlns:th="http://www.thymeleaf.org">
+<head> 
+    <title>Revenda: Modelo</title> 
+</head>
+<body>
+    <div class="main">
+        <h2>Cadastrar Modelo</h2>
+
+        <sl-alert id="alertErro" variant="danger" th:open="${msgErro}">
+            <sl-icon slot="icon" name="exclamation-octagon"></sl-icon>
+            <span th:text=${msgErro}></span>
+        </sl-alert>
+
+        <form th:replace="~{modelo_campos :: campos(@{/veiculos/salvar_modelo} + ${idVeiculo != null ? '?idVeiculo='+idVeiculo: ''}, ${modelo})}">
+        </form>
+    </div>
+</body>
+</html>

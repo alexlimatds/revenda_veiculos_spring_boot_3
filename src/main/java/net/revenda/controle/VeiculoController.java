@@ -28,6 +28,8 @@ import net.revenda.dominio.FabricanteRepository;
 import net.revenda.dominio.Foto;
 import net.revenda.dominio.Modelo;
 import net.revenda.dominio.ModeloRepository;
+import net.revenda.dominio.TipoVeiculo;
+import net.revenda.dominio.TipoVeiculoRepository;
 import net.revenda.dominio.Veiculo;
 import net.revenda.dominio.VeiculoRepository;
 
@@ -44,10 +46,19 @@ public class VeiculoController {
     @Autowired
     private VeiculoRepository repositorioVeiculo;
 
+    @Autowired
+    private TipoVeiculoRepository repositorioTipoVeiculo;
+
     //Disponibiliza a lista de fabricantes para a view
 	@ModelAttribute("fabricantes")
 	public List<Fabricante> gerarListaFabricantes(){
 		return repositorioFabricante.findAllByOrderByDescricaoAsc();
+	}
+
+    //Disponibiliza a lista de tipos de veículo para a view
+	@ModelAttribute("tipos")
+	public List<TipoVeiculo> gerarListaTiposDeVeiculo(){
+		return repositorioTipoVeiculo.findAllByOrderByDescricaoAsc();
 	}
     
     @GetMapping
@@ -122,6 +133,7 @@ public class VeiculoController {
         }
         model.addAttribute("veiculo", v);
         model.addAttribute("modelos", repositorioModelo.findAll());
+        model.addAttribute("novoModelo", new Modelo()); //usado no cadastro de modelo
         return "veiculo_form";
     }
 
@@ -164,4 +176,40 @@ public class VeiculoController {
 		headers.setContentType(mimeType);
 		return new ResponseEntity<>(foto.getBytes(), headers, HttpStatus.OK);
 	}
+
+    @GetMapping("/cad_modelo")
+    public String formCadastroModelo(
+        Model model, 
+        @RequestParam(required = false) Integer idVeiculo)
+    {
+        model.addAttribute("modelo", new Modelo());
+        if(idVeiculo != null)
+            model.addAttribute("idVeiculo", idVeiculo);
+        return "veiculos_cad_modelo";
+    }
+
+    @PostMapping("/salvar_modelo")
+    public String modeloSalvar(
+        @ModelAttribute @Valid Modelo modelo, 
+		BindingResult br, 
+        final RedirectAttributes rAttrs, 
+        Model model, 
+        @RequestParam(required = false) Integer idVeiculo
+    ){
+        if(br.hasErrors()){
+            return "veiculos_cad_modelo";
+        }
+        try{
+            repositorioModelo.save(modelo);
+            rAttrs.addFlashAttribute("msgSucesso", "Modelo salvo com sucesso.");
+        }catch(Exception ex){
+            ex.printStackTrace();
+            rAttrs.addFlashAttribute("msgErro", "Ocorreu um erro durante a operação.");
+        }
+        String url_destino = "redirect:/veiculos/form";
+        if(idVeiculo != null)
+            url_destino += "/" + idVeiculo;
+        //TODO setar modelo recem cadastrado no campo de veículo
+        return url_destino;
+    }
 }

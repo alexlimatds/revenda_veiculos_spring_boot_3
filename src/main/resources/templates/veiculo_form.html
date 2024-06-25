@@ -38,7 +38,7 @@
             else document.addEventListener("DOMContentLoaded", callback);
         }
         ready(() => {
-            /* BOTÃO DE ABERTURA DE DIALOG */
+            /* ABERTURA DE DIALOG PARA BUSCA DE MODELO */
             const inputModelo = document.querySelector('#sl-modelo');
             inputModelo.addEventListener('click', async event => {
                 const idModelo = document.querySelector('input[name="modelo"]').value;
@@ -134,6 +134,12 @@
 
             <sl-select label="Modelo" name="idModeloSelecionado" placeholder="Selecione um fabricante para ativar este campo" disabled>
             </sl-select>
+            <br>
+
+            <sl-button variant="neutral" id="btnCadModelo" th:href="@{/veiculos/cad_modelo} + ${veiculo.id != null ? '?idVeiculo='+veiculo.id : ''}">
+                <sl-icon slot="prefix" name="plus-circle"></sl-icon>
+                Cadastrar modelo
+            </sl-button>
 
             <sl-button slot="footer" variant="primary" id="btnConfirmar" disabled>
                 <sl-icon slot="prefix" name="check-circle"></sl-icon>
