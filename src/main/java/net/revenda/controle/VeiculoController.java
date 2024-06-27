@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -34,6 +36,7 @@ import net.revenda.dominio.Veiculo;
 import net.revenda.dominio.VeiculoRepository;
 
 @Controller
+@SessionAttributes("veiculo")
 @RequestMapping("/veiculos")
 public class VeiculoController {
     
@@ -60,6 +63,11 @@ public class VeiculoController {
 	public List<TipoVeiculo> gerarListaTiposDeVeiculo(){
 		return repositorioTipoVeiculo.findAllByOrderByDescricaoAsc();
 	}
+
+    @ModelAttribute("veiculo")
+    public Veiculo veiculo(){
+        return new Veiculo();
+    }
     
     @GetMapping
     public String veiculos(Model model){
@@ -116,24 +124,22 @@ public class VeiculoController {
         }
     }
 
-    @GetMapping(value = {"/form", "/form/{id}"})
+    @GetMapping(value = {"/form", "/form/{idVeiculo}"})
     public String veiculoForm(
         Model model, 
-        @PathVariable Optional<Integer> id
+        @PathVariable Optional<Integer> idVeiculo, 
+        @ModelAttribute Veiculo veiculo, 
+        @RequestParam(required = false) Integer idModelo
     ){
-        Veiculo v = null;
-        if(id.isPresent()){ //edição
-            Optional<Veiculo> r = repositorioVeiculo.findById(id.get());
+        if(idVeiculo.isPresent()){ //edição
+            Optional<Veiculo> r = repositorioVeiculo.findById(idVeiculo.get());
             if(!r.isPresent())
                 throw new IllegalArgumentException("Id inválido");
-            v = r.get();
+            model.addAttribute("veiculo", r.get());
         }
-        else{ //novo veículo
-            v = new Veiculo();
+        else if(idModelo != null){
+            veiculo.setModelo(repositorioModelo.getReferenceById(idModelo));
         }
-        model.addAttribute("veiculo", v);
-        model.addAttribute("modelos", repositorioModelo.findAll());
-        model.addAttribute("novoModelo", new Modelo()); //usado no cadastro de modelo
         return "veiculo_form";
     }
 
@@ -142,7 +148,8 @@ public class VeiculoController {
         @ModelAttribute @Valid Veiculo veiculo, 
 		BindingResult br, 
         @RequestParam("arquivoFoto") MultipartFile arquivoFoto, 
-        final RedirectAttributes rAttrs
+        final RedirectAttributes rAttrs, 
+        SessionStatus status
     ){
         if(br.hasErrors()){
             return "veiculo_form";
@@ -159,6 +166,7 @@ public class VeiculoController {
                 );
             }
             repositorioVeiculo.save(veiculo);
+            status.setComplete();
             rAttrs.addFlashAttribute("msgSucesso", "Veículo de placa " + veiculo.getPlaca() + " salvo com sucesso.");
         }catch(Exception ex){
             ex.printStackTrace();
@@ -177,39 +185,12 @@ public class VeiculoController {
 		return new ResponseEntity<>(foto.getBytes(), headers, HttpStatus.OK);
 	}
 
-    @GetMapping("/cad_modelo")
+    @PostMapping("/cad_modelo")
     public String formCadastroModelo(
-        Model model, 
-        @RequestParam(required = false) Integer idVeiculo)
-    {
-        model.addAttribute("modelo", new Modelo());
-        if(idVeiculo != null)
-            model.addAttribute("idVeiculo", idVeiculo);
-        return "veiculos_cad_modelo";
-    }
-
-    @PostMapping("/salvar_modelo")
-    public String modeloSalvar(
-        @ModelAttribute @Valid Modelo modelo, 
-		BindingResult br, 
-        final RedirectAttributes rAttrs, 
-        Model model, 
-        @RequestParam(required = false) Integer idVeiculo
+        @ModelAttribute Veiculo veiculo, 
+        Model model
     ){
-        if(br.hasErrors()){
-            return "veiculos_cad_modelo";
-        }
-        try{
-            repositorioModelo.save(modelo);
-            rAttrs.addFlashAttribute("msgSucesso", "Modelo salvo com sucesso.");
-        }catch(Exception ex){
-            ex.printStackTrace();
-            rAttrs.addFlashAttribute("msgErro", "Ocorreu um erro durante a operação.");
-        }
-        String url_destino = "redirect:/veiculos/form";
-        if(idVeiculo != null)
-            url_destino += "/" + idVeiculo;
-        //TODO setar modelo recem cadastrado no campo de veículo
-        return url_destino;
+        model.addAttribute("veiculoEmEdicao", veiculo); //põe na sessão
+        return "forward:/modelos/form?redirect_url=/veiculos/form";
     }
 }

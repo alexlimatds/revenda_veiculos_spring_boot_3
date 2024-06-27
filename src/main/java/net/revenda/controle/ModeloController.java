@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -77,10 +79,11 @@ public class ModeloController {
         }
     }
 
-    @GetMapping(value = {"/form", "/form/{id}"})
+    @RequestMapping(value = {"/form", "/form/{id}"}, method = {RequestMethod.POST, RequestMethod.GET})
     public String modeloForm(
         Model model, 
-        @PathVariable Optional<Integer> id
+        @PathVariable Optional<Integer> id, 
+        @RequestParam(required = false) String redirect_url
     ){
         Modelo mv = null;
         if(id.isPresent()){ //edição
@@ -93,6 +96,7 @@ public class ModeloController {
             mv = new Modelo();
         }
         model.addAttribute("modelo", mv);
+        model.addAttribute("redirect_url", redirect_url);
         return "modelo_form";
     }
 
@@ -100,8 +104,12 @@ public class ModeloController {
     public String modeloSalvar(
         @ModelAttribute @Valid Modelo modelo, 
 		BindingResult br, 
-        final RedirectAttributes rAttrs
+        @RequestParam(required = false) String redirect_url, 
+        final RedirectAttributes rAttrs, 
+        Model model
     ){
+        if(redirect_url != null)
+            model.addAttribute("redirect_url", redirect_url);
         if(br.hasErrors()){
             return "modelo_form";
         }
@@ -112,6 +120,9 @@ public class ModeloController {
             ex.printStackTrace();
             rAttrs.addFlashAttribute("msgErro", "Ocorreu um erro durante a operação.");
         }
+
+        if(redirect_url != null)
+            return "redirect:" + redirect_url + "?idModelo=" + modelo.getId();
         return "redirect:/modelos";
     }
 

@@ -3,6 +3,11 @@
 <head> 
     <title>Revenda: Veículo</title> 
     <script th:inline="javascript">
+        function cadastrarModelo(){
+            const formulario = document.querySelector("#formCadVeiculo");
+            formulario.action = /*[[@{/veiculos/cad_modelo}]]*/ '';
+            formulario.submit();
+        }
         function alertarErro(msg){
             const alert = document.querySelector("#alertErro");
             alert.querySelector("span").textContent = msg;
@@ -93,7 +98,7 @@
             <span th:text=${msgErro}></span>
         </sl-alert>
 
-        <form class="input-validation-required" action="#" th:action="@{/veiculos/salvar}" th:object="${veiculo}" method="post" enctype="multipart/form-data">
+        <form id="formCadVeiculo" class="input-validation-required" action="#" th:action="@{/veiculos/salvar}" th:object="${veiculo}" method="post" enctype="multipart/form-data">
             <input type="hidden" th:value="*{id}" name="id">
             
             <sl-input name="placa" label="Placa" th:value="*{placa}"></sl-input>
@@ -136,7 +141,7 @@
             </sl-select>
             <br>
 
-            <sl-button variant="neutral" id="btnCadModelo" th:href="@{/veiculos/cad_modelo} + ${veiculo.id != null ? '?idVeiculo='+veiculo.id : ''}">
+            <sl-button variant="neutral" id="btnCadModelo" onclick="cadastrarModelo()">
                 <sl-icon slot="prefix" name="plus-circle"></sl-icon>
                 Cadastrar modelo
             </sl-button>
