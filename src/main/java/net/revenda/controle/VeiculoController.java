@@ -192,11 +192,7 @@ public class VeiculoController {
 	}
 
     @PostMapping("/cad_modelo")
-    public String formCadastroModelo(
-        @ModelAttribute Veiculo veiculo, 
-        Model model
-    ){
-        model.addAttribute("veiculoEmEdicao", veiculo); //põe na sessão
+    public String formCadastroModelo(){
         return "forward:/modelos/form?redirect_url=/veiculos/form";
     }
 }
