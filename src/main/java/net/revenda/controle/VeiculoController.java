@@ -192,7 +192,9 @@ public class VeiculoController {
 	}
 
     @PostMapping("/cad_modelo")
-    public String formCadastroModelo(){
+    public String formCadastroModelo(
+        @ModelAttribute Veiculo veiculo //necessário para guardar os valores dos campos do formulário
+    ){
         return "forward:/modelos/form?redirect_url=/veiculos/form";
     }
 }

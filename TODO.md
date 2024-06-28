@@ -1,2 +1,1 @@
 -CDU Registrar Compra.
--Cadastro de veículo com cadastro de modelo: não preserva a foto indicada antes do cadastro de modelo.
