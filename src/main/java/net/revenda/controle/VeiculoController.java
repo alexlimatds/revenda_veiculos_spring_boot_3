@@ -63,11 +63,6 @@ public class VeiculoController {
 	public List<TipoVeiculo> gerarListaTiposDeVeiculo(){
 		return repositorioTipoVeiculo.findAllByOrderByDescricaoAsc();
 	}
-
-    @ModelAttribute("veiculo")
-    public Veiculo veiculo(){
-        return new Veiculo();
-    }
     
     @GetMapping
     public String veiculos(Model model){
@@ -124,22 +119,33 @@ public class VeiculoController {
         }
     }
 
-    @GetMapping(value = {"/form", "/form/{idVeiculo}"})
+    @GetMapping(value = "/novo")
+    public String veiculoNovo(
+        Model model
+    ){
+        model.addAttribute("veiculo", new Veiculo()); //insere na sessão
+        return "veiculo_form";
+    }
+
+    @GetMapping(value = "/alterar/{idVeiculo}")
     public String veiculoForm(
         Model model, 
-        @PathVariable Optional<Integer> idVeiculo, 
-        @ModelAttribute Veiculo veiculo, 
-        @RequestParam(required = false) Integer idModelo
+        @PathVariable Integer idVeiculo
     ){
-        if(idVeiculo.isPresent()){ //edição
-            Optional<Veiculo> r = repositorioVeiculo.findById(idVeiculo.get());
-            if(!r.isPresent())
-                throw new IllegalArgumentException("Id inválido");
-            model.addAttribute("veiculo", r.get());
-        }
-        else if(idModelo != null){
-            veiculo.setModelo(repositorioModelo.getReferenceById(idModelo));
-        }
+        Optional<Veiculo> r = repositorioVeiculo.findById(idVeiculo);
+        if(!r.isPresent())
+            throw new IllegalArgumentException("Id inválido");
+        model.addAttribute("veiculo", r.get()); //insere na sessão
+        return "veiculo_form";
+    }
+
+    @GetMapping(value = "/form") //destino após o cadastro de modelo
+    public String veiculoForm(
+        Model model, 
+        @ModelAttribute Veiculo veiculo, // obtém da sessão
+        @RequestParam Integer idModelo
+    ){
+        veiculo.setModelo(repositorioModelo.getReferenceById(idModelo));
         return "veiculo_form";
     }
 
