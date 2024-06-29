@@ -13,6 +13,12 @@
             alert.querySelector("span").textContent = msg;
             alert.show();
         }
+        function verFoto(idVeiculo){
+            const veiculosUrl = /*[[@{/veiculos}]]*/ '';
+            const imgUrl = veiculosUrl + `/${idVeiculo}/foto`;
+            document.querySelector('#imgVeiculo').src = imgUrl;
+            document.querySelector('#dialogFoto').show();
+        }
         async function buscarModelos(idFabricante){
             const selectModelo = document.querySelector('sl-select[name="idModeloSelecionado"]');
             // remove opções de modelo atuais
@@ -115,15 +121,15 @@
             <input type="hidden" th:value="*{modelo?.id}" name="modelo">
             <p th:if="${#fields.hasErrors('modelo')}" th:errors="*{modelo}" class="campo-invalido">Mensagem</p>
             <br>
-
+            
             <div>
                 <label for="fileFoto">Foto</label>
                 <br>
-                <sl-icon-button name="eye" label="ver foto" th:disabled="*{foto == null}"></sl-icon-button>
+                <sl-icon-button name="eye" label="ver foto" th:disabled="*{foto == null}" th:onclick="verFoto([[*{id}]])"></sl-icon-button>
                 <input type="file" name="arquivoFoto" accept="image/*" class="form_control" id="fileFoto">
             </div>
             <br>
-
+            
             <sl-button variant="primary" type="submit">
                 <sl-icon slot="prefix" name="floppy"></sl-icon>
                 Salvar

@@ -24,7 +24,7 @@ public class Veiculo{
 	@NotNull
 	private Integer anoFabricacao;
 
-	@Pattern(regexp="[A-Z]{3}\\d{1}[0-9A-Z]\\d{2}")  // padrão Mercosul e anterior
+	@Pattern(regexp="[A-Za-z]{3}\\d{1}[0-9A-Za-z]\\d{2}")  // padrão Mercosul e anterior
 	@NotNull
 	private String placa;
 

@@ -65,5 +65,15 @@ public class VeiculoRepositoryCustomImpl implements VeiculoRepositoryCustom{
         
         return entityManager.createQuery(query).getResultList();
     }
+
+    @Override
+    public <S extends Veiculo> S save(S veiculo) {
+        if(veiculo.getId() != null && veiculo.getFoto() == null){ // preserva foto já cadastrada
+            Veiculo veiculoEmBanco = entityManager.find(Veiculo.class, veiculo.getId());
+            veiculo.setFoto(veiculoEmBanco.getFoto());
+        }
+        entityManager.merge(veiculo);
+        return veiculo;
+    }
     
 }

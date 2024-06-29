@@ -153,7 +153,7 @@ public class VeiculoController {
     public String veiculosSalvar(
         @ModelAttribute @Valid Veiculo veiculo, 
 		BindingResult br, 
-        @RequestParam("arquivoFoto") MultipartFile arquivoFoto, 
+        @RequestParam(name = "arquivoFoto", required = false) MultipartFile arquivoFoto, 
         final RedirectAttributes rAttrs, 
         SessionStatus status
     ){
@@ -165,11 +165,6 @@ public class VeiculoController {
                 byte[] bytes = arquivoFoto.getBytes();
                 String mimeType = arquivoFoto.getContentType();
                 veiculo.setFoto(new Foto(bytes, mimeType));
-            }
-            else if(veiculo.getId() != null){
-                veiculo.setFoto(
-                    repositorioVeiculo.findById(veiculo.getId()).get().getFoto()
-                );
             }
             repositorioVeiculo.save(veiculo);
             status.setComplete();
