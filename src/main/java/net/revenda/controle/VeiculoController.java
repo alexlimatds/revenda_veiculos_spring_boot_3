@@ -1,5 +1,6 @@
 package net.revenda.controle;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -161,11 +162,7 @@ public class VeiculoController {
             return "veiculo_form";
         }
         try{
-            if(!arquivoFoto.isEmpty()){
-                byte[] bytes = arquivoFoto.getBytes();
-                String mimeType = arquivoFoto.getContentType();
-                veiculo.setFoto(new Foto(bytes, mimeType));
-            }
+            atualizarFoto(arquivoFoto, veiculo);
             repositorioVeiculo.save(veiculo);
             status.setComplete();
             rAttrs.addFlashAttribute("msgSucesso", "Veículo de placa " + veiculo.getPlaca() + " salvo com sucesso.");
@@ -186,10 +183,36 @@ public class VeiculoController {
 		return new ResponseEntity<>(foto.getBytes(), headers, HttpStatus.OK);
 	}
 
+    @GetMapping("/em_edicao/foto")
+	public ResponseEntity<byte[]> verFotoDeVeiculoEmEdicao(
+        @ModelAttribute Veiculo veiculo
+    ){
+        Foto foto = veiculo.getFoto();
+		HttpHeaders headers = new HttpHeaders();
+		String[] tokens = foto.getMimeType().split("/");
+		MediaType mimeType = new MediaType(tokens[0], tokens[1]);
+		headers.setContentType(mimeType);
+		return new ResponseEntity<>(foto.getBytes(), headers, HttpStatus.OK);
+	}
+
     @PostMapping("/cad_modelo")
     public String formCadastroModelo(
-        @ModelAttribute Veiculo veiculo //necessário para guardar os valores dos campos do formulário
+        @ModelAttribute Veiculo veiculo, //necessário para guardar os valores dos campos do formulário
+        @RequestParam(name = "arquivoFoto", required = false) MultipartFile arquivoFoto
     ){
+        atualizarFoto(arquivoFoto, veiculo);
         return "forward:/modelos/form?redirect_url=/veiculos/form";
+    }
+
+    void atualizarFoto(MultipartFile arquivoFoto, Veiculo v){
+        try {
+            if(arquivoFoto != null && !arquivoFoto.isEmpty()){
+                byte[] bytes = arquivoFoto.getBytes();
+                String mimeType = arquivoFoto.getContentType();
+                v.setFoto(new Foto(bytes, mimeType));
+            }
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
     }
 }
