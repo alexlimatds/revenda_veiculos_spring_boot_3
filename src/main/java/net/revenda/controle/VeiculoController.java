@@ -140,13 +140,14 @@ public class VeiculoController {
         return "veiculo_form";
     }
 
-    @GetMapping(value = "/form") //destino após o cadastro de modelo
+    @GetMapping(value = "/form") //destino após tela de cadastro de modelo
     public String veiculoForm(
         Model model, 
         @ModelAttribute Veiculo veiculo, // obtém da sessão
-        @RequestParam Integer idModelo
+        @RequestParam(required = false) Integer idModelo
     ){
-        veiculo.setModelo(repositorioModelo.getReferenceById(idModelo));
+        if(idModelo != null) // um modelo foi cadastrado
+            veiculo.setModelo(repositorioModelo.getReferenceById(idModelo));
         return "veiculo_form";
     }
 

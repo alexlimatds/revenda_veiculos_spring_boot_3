@@ -1,2 +1,1 @@
 -CDU Registrar Compra.
--Cadastro de veículo com cadastro de modelo: no cadastro de modelo, adicionar botão para cancelar a operação e então retornar ao formulário de cadastro de veículo.

@@ -32,6 +32,10 @@
                 <sl-icon slot="prefix" name="floppy"></sl-icon>
                 Salvar
             </sl-button>
+            <sl-button th:href="${redirect_url}" th:if="${redirect_url}">
+                <sl-icon slot="prefix" name="x-circle"></sl-icon>
+                Cancelar
+            </sl-button>
         </form>
     </div>
 </body>
